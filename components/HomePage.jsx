@@ -147,7 +147,7 @@ const HomePage = ({ currentPage ='feed' }) => {
       <section className={styles.welcomeSection}>
         <div className={styles.welcomeHeaderContainer}>
           <h1 className={styles.greeting}>Good morning, {mockUser.name}.</h1>
-          <p className={styles.subtitle}>Here's what's happening in {mockUser.neighborhood} today.</p>
+          <p className={styles.subtitle}>Here&apos;s what&apos;s happening in {mockUser.neighborhood} today.</p>
         </div>
       </section>
 

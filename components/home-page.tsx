@@ -1,5 +1,6 @@
 'use client';
 
+import Image from "next/image";
 import { useEffect, useState, useTransition } from "react";
 import {
   GoogleAuthProvider,
@@ -11,6 +12,7 @@ import {
 import { auth, isFirebaseConfigured } from "@/lib/firebase";
 
 type HelpRequest = {
+  authorName: string;
   category: string;
   title: string;
   description: string;
@@ -21,6 +23,7 @@ type HelpRequest = {
 
 const requests: HelpRequest[] = [
   {
+    authorName: "Maya Johnson",
     category: "Seasonal help",
     title: "Snow shoveling for a neighbor recovering from surgery",
     description:
@@ -30,6 +33,7 @@ const requests: HelpRequest[] = [
     urgency: "Urgent",
   },
   {
+    authorName: "Luis Ramirez",
     category: "Harvest share",
     title: "Picking fruit from a backyard tree for the food pantry",
     description:
@@ -39,6 +43,7 @@ const requests: HelpRequest[] = [
     urgency: "New",
   },
   {
+    authorName: "Aisha Carter",
     category: "Care circle",
     title: "Meal drop-off and porch check-in for a new parent",
     description:
@@ -66,6 +71,11 @@ function getInitials(name: string | null | undefined) {
     .join("");
 }
 
+function getDisplayName(user: User | null) {
+  if (!user?.displayName?.trim()) return "Gather member";
+  return user.displayName.trim();
+}
+
 export default function HomePage() {
   const [user, setUser] = useState<User | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
@@ -83,6 +93,7 @@ export default function HomePage() {
   }, []);
 
   const helperName = user?.displayName?.split(" ")[0] ?? "neighbor";
+  const displayName = getDisplayName(user);
 
   const handleGoogleAuth = () => {
     if (!auth) {
@@ -157,6 +168,23 @@ export default function HomePage() {
                   </a>
                 ))}
               </nav>
+
+              <div className="user-chip" aria-label={`Signed in as ${displayName}`}>
+                {user.photoURL ? (
+                  <Image
+                    src={user.photoURL}
+                    alt={displayName}
+                    width={32}
+                    height={32}
+                    className="avatar avatar-photo avatar-sm"
+                  />
+                ) : (
+                  <div className="avatar avatar-sm avatar-sage">
+                    {getInitials(user.displayName)}
+                  </div>
+                )}
+                <span className="user-chip-name">{displayName}</span>
+              </div>
 
               <button
                 type="button"
@@ -293,8 +321,11 @@ export default function HomePage() {
                 </div>
 
                 <div className="card-post-header">
-                  <div className="avatar avatar-md avatar-peach">G</div>
+                  <div className="avatar avatar-md avatar-peach">
+                    {getInitials(request.authorName)}
+                  </div>
                   <div>
+                    <p className="card-post-author">{request.authorName}</p>
                     <h4 className="card-post-title">{request.title}</h4>
                     <p className="request-meta">{request.neighborhood}</p>
                   </div>
