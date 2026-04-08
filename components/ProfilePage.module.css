@@ -1,7 +1,7 @@
 .page {
   width: 100%;
   background: var(--color-canvas);
-  padding: 0;
+  padding: var(--space-6);
   font-family: var(--font-ui);
   color: var(--color-text-primary);
   display: flex;
@@ -9,35 +9,25 @@
   min-height: 100vh;
 }
 
+.shell {
+  max-width: 1180px;
+  width: 100%;
+  margin: 0 auto;
+}
+
 .header {
   display: flex;
   align-items: center;
-  gap: var(--space-4);
-  padding: var(--space-6);
+  gap: var(--space-2);
+  padding: var(--space-5);
   background: var(--color-white);
-  border-bottom: 1px solid rgba(30, 48, 16, 0.08);
-  position: relative;
-}
-
-.backBtn {
-  background: transparent;
-  color: var(--color-sage-600);
-  border: none;
-  font-size: var(--text-body);
-  font-weight: 500;
-  cursor: pointer;
-  text-decoration: none;
-  font-family: var(--font-ui);
-  display: inline-block;
-  padding: 0;
-}
-
-.backBtn:hover {
-  color: var(--color-sage-700);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-3);
 }
 
 .header h1 {
-  font-size: var(--text-headline);
+  font-size: 28px;
   font-weight: 500;
   margin: 0;
   flex: 1;
@@ -49,7 +39,9 @@
   gap: var(--space-6);
   padding: var(--space-8) var(--space-6);
   background: var(--color-white);
-  border-bottom: 1px solid rgba(30, 48, 16, 0.08);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-3);
 }
 
 .avatarLarge {
@@ -89,9 +81,11 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: var(--space-4);
-  padding: var(--space-6);
+  padding: var(--space-5);
   background: var(--color-white);
-  border-bottom: 1px solid rgba(30, 48, 16, 0.08);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-3);
 }
 
 .stat {
@@ -121,9 +115,11 @@
 }
 
 .section {
-  padding: var(--space-6);
+  padding: var(--space-5);
   background: var(--color-white);
-  border-bottom: 1px solid rgba(30, 48, 16, 0.08);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-3);
 }
 
 .sectionHeader {
@@ -155,6 +151,163 @@
   color: var(--color-sage-700);
 }
 
+.editorPanel {
+  margin-top: var(--space-4);
+  border: 1px solid var(--color-sage-100);
+  border-radius: var(--radius-md);
+  background: var(--color-sage-50);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.searchInput {
+  width: 100%;
+  border: 1px solid var(--color-sage-300);
+  border-radius: var(--radius-pill);
+  padding: 10px var(--space-4);
+  background: var(--color-white);
+  color: var(--color-forest);
+  font-size: var(--text-body-sm);
+  font-family: var(--font-ui);
+}
+
+.searchInput:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus-sage);
+  border-color: var(--color-sage-500);
+}
+
+.optionList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  max-height: 224px;
+  overflow-y: auto;
+  padding-right: var(--space-1);
+}
+
+.optionItem {
+  border: 1px solid var(--color-sage-100);
+  border-radius: var(--radius-md);
+  background: var(--color-white);
+  color: var(--color-forest);
+  font-family: var(--font-ui);
+  font-size: var(--text-body-sm);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: left;
+  padding: 10px var(--space-3);
+  cursor: pointer;
+  transition: border-color var(--transition-base), background var(--transition-base);
+}
+
+.optionItem:hover {
+  border-color: var(--color-sage-300);
+}
+
+.optionItem:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus-sage);
+}
+
+.optionItemSelected {
+  border-color: var(--color-sage-500);
+  background: var(--color-sage-100);
+}
+
+.optionState {
+  font-size: var(--text-caption);
+  color: var(--color-sage-600);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 500;
+}
+
+.editorActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.cancelBtn,
+.saveBtn {
+  border-radius: var(--radius-pill);
+  border: 1px solid transparent;
+  padding: 8px var(--space-4);
+  font-family: var(--font-ui);
+  font-size: var(--text-body-sm);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.cancelBtn {
+  background: transparent;
+  color: var(--color-sage-700);
+  border-color: var(--color-sage-300);
+}
+
+.saveBtn {
+  background: var(--color-action);
+  color: var(--color-white);
+}
+
+.saveBtn:hover {
+  background: var(--color-peach-600);
+}
+
+.cancelBtn:focus-visible,
+.saveBtn:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus-sage);
+}
+
+.noResults {
+  margin: 0;
+  padding: var(--space-3);
+  text-align: center;
+  color: var(--color-stone);
+  font-size: var(--text-body-sm);
+}
+
+.commitmentList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.commitmentItem {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.commitmentTitle {
+  margin: 0;
+  color: var(--color-forest);
+  font-size: var(--text-body-sm);
+  font-weight: 500;
+}
+
+.commitmentMeta {
+  margin: 4px 0 0;
+  color: var(--color-stone);
+  font-size: var(--text-caption);
+}
+
+.commitmentPerson {
+  color: var(--color-sage-700);
+  font-size: var(--text-body-sm);
+  font-weight: 500;
+}
+
 .tags {
   display: flex;
   flex-wrap: wrap;
@@ -181,8 +334,8 @@
 .logoutBtn {
   width: 100%;
   background: transparent;
-  color: #C04030;
-  border: 1.5px solid #C04030;
+  color: var(--color-peach-700);
+  border: 1.5px solid var(--color-peach-700);
   border-radius: var(--radius-pill);
   padding: var(--space-4);
   font-size: var(--text-body);
@@ -193,21 +346,38 @@
 }
 
 .logoutBtn:hover {
-  background: rgba(192, 64, 48, 0.08);
+  background: var(--color-peach-50);
 }
 
 .logoutBtn:active {
   transform: scale(0.98);
 }
 
-.bottomNavSpacer {
-  height: 64px;
-  flex-shrink: 0;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .editBtn,
   .logoutBtn {
     transition: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .page {
+    padding: var(--space-3);
+  }
+
+  .header,
+  .profileHero,
+  .statsGrid,
+  .section {
+    padding: var(--space-4);
+  }
+
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .commitmentItem {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

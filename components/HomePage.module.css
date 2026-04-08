@@ -1,20 +1,41 @@
 .page {
   width: 100%;
-  margin: 0 auto;
   background: var(--color-canvas);
-  padding: 0;
+  padding: var(--space-6);
   font-family: var(--font-ui);
   color: var(--color-text-primary);
-  flex: 1;
-  display: flex;
-  flex-direction: column;
   min-height: 100vh;
 }
 
-/* Welcome Header */
+.shell {
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+.contentGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(320px, 1fr);
+  gap: var(--space-6);
+  align-items: start;
+}
+
+.mainColumn,
+.sideColumn {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.sideColumn {
+  position: sticky;
+  top: var(--space-6);
+}
+
 .welcomeSection {
-  background: var(--color-sage-50);
-  padding: var(--space-6) var(--space-6);
+  background: linear-gradient(130deg, var(--color-sage-50), var(--color-white));
+  padding: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
 }
 
 .welcomeHeaderContainer {
@@ -41,20 +62,19 @@
   margin: 0;
 }
 
-/* Profile Snapshot */
 .profileSnapshotSection {
-  padding: var(--space-5) var(--space-6);
-  background: var(--color-white);
+  padding: 0;
 }
 
 .profileCard {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--color-sage-100);
+  flex-direction: column;
+  align-items: stretch;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: var(--space-3);
-  gap: var(--space-3);
+  padding: var(--space-5);
+  gap: var(--space-4);
 }
 
 .profileCardLeft {
@@ -66,13 +86,13 @@
 }
 
 .profileAvatar {
-  width: 40px;
-  height: 40px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: var(--text-body);
   font-weight: 500;
   color: var(--color-forest);
   flex-shrink: 0;
@@ -88,7 +108,7 @@
 }
 
 .profileName {
-  font-size: var(--text-headline-sm);
+  font-size: var(--text-headline);
   font-weight: 500;
   color: var(--color-forest);
   line-height: 1.4;
@@ -102,7 +122,7 @@
 .profileSkills {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: var(--space-1);
   margin-top: var(--space-1);
 }
 
@@ -120,22 +140,25 @@
 }
 
 .viewProfileBtn {
-  background: transparent;
-  color: var(--color-sage-600);
-  border: none;
-  font-size: var(--text-label);
+  background: var(--color-sage-50);
+  color: var(--color-sage-700);
+  border: 1px solid var(--color-sage-100);
+  font-size: var(--text-body-sm);
   font-weight: 500;
   cursor: pointer;
-  padding: var(--space-2);
+  padding: 9px 14px;
   border-radius: var(--radius-md);
-  transition: background var(--transition-base);
+  transition: background var(--transition-base), border-color var(--transition-base);
   white-space: nowrap;
   flex-shrink: 0;
   font-family: var(--font-ui);
+  text-decoration: none;
+  align-self: flex-start;
 }
 
 .viewProfileBtn:hover {
-  background: rgba(61, 104, 40, 0.1);
+  background: var(--color-sage-100);
+  border-color: var(--color-sage-300);
 }
 
 .viewProfileBtn:focus-visible {
@@ -144,15 +167,13 @@
   border-radius: var(--radius-md);
 }
 
-/* Primary CTA Banner */
 .ctaBannerSection {
-  padding: var(--space-5) var(--space-6);
-  background: var(--color-white);
+  padding: 0;
 }
 
 .ctaBanner {
   background: var(--color-peach-50);
-  border: 0.5px solid var(--color-sage-100);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: var(--space-5);
   display: flex;
@@ -206,11 +227,11 @@
   box-shadow: var(--shadow-focus-peach);
 }
 
-/* Feed Section */
 .feedSection {
-  padding: var(--space-5) var(--space-6);
+  padding: var(--space-6);
   background: var(--color-white);
-  border-top: 0.5px solid rgba(30, 48, 16, 0.07);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
 }
 
 .sectionLabelWrapper {
@@ -227,17 +248,39 @@
   font-family: var(--font-ui);
 }
 
+.sectionMeta {
+  margin: var(--space-1) 0 0;
+  color: var(--color-stone);
+  font-size: var(--text-caption);
+}
+
 .postsList {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-3);
 }
 
-/* Skills Section */
+.showAllBtn {
+  margin-top: var(--space-4);
+  border: 1px solid var(--color-sage-300);
+  background: var(--color-sage-50);
+  color: var(--color-sage-700);
+  border-radius: var(--radius-pill);
+  padding: 9px 14px;
+  font-size: var(--text-body-sm);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.showAllBtn:hover {
+  background: var(--color-sage-100);
+}
+
 .skillsSection {
-  padding: var(--space-5) var(--space-6);
+  padding: var(--space-5);
   background: var(--color-white);
-  border-top: 0.5px solid rgba(30, 48, 16, 0.07);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
 }
 
 .skillsRow {
@@ -268,13 +311,14 @@
   font-weight: 400;
   cursor: pointer;
   padding: 0;
-  text-decoration: underline;
   transition: color var(--transition-base);
   font-family: var(--font-ui);
+  text-decoration: none;
 }
 
 .editSkillsLink:hover {
   color: var(--color-sage-700);
+  text-decoration: underline;
 }
 
 .editSkillsLink:focus-visible {
@@ -284,11 +328,12 @@
   padding: 2px 4px;
 }
 
-/* Bottom Nav Spacer */
 .bottomNavSpacer {
-  height: 64px;
-  flex-shrink: 0;
-  background: var(--color-white);
+  display: none;
+}
+
+.bottomNavMobileOnly {
+  display: none;
 }
 
 /* Accessibility: Reduce Motion */
@@ -302,10 +347,53 @@
   }
 }
 
-/* Mobile Layout */
-@media (max-width: 480px) {
+@media (max-width: 1280px) {
+  .contentGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .sideColumn {
+    position: static;
+  }
+}
+
+@media (max-width: 1140px) {
+  .postsList {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 1024px) {
   .page {
+    padding: var(--space-4);
+  }
+
+  .topbar {
+    margin-bottom: var(--space-4);
+  }
+
+  .shell {
     max-width: 100%;
+  }
+}
+
+@media (max-width: 760px) {
+  .page {
+    padding: var(--space-3);
+  }
+
+  .welcomeSection,
+  .feedSection,
+  .profileCard,
+  .ctaBanner {
+    border-radius: var(--radius-md);
+  }
+
+  .welcomeSection,
+  .feedSection,
+  .profileCard,
+  .ctaBanner {
+    padding: var(--space-4);
   }
 
   .greeting {
@@ -317,25 +405,12 @@
   }
 }
 
-/* Landscape orientation adjustments */
 @media (orientation: landscape) and (max-height: 600px) {
   .welcomeSection {
     padding: var(--space-4) var(--space-4);
   }
 
-  .profileSnapshotSection {
-    padding: var(--space-3) var(--space-4);
-  }
-
-  .ctaBannerSection {
-    padding: var(--space-3) var(--space-4);
-  }
-
   .feedSection {
-    padding: var(--space-3) var(--space-4);
-  }
-
-  .skillsSection {
     padding: var(--space-3) var(--space-4);
   }
 }

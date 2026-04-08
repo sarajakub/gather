@@ -30,6 +30,24 @@
   justify-content: space-between;
 }
 
+.posterBar {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  border-radius: var(--radius-md);
+  padding: 2px;
+  margin: -2px;
+}
+
+.posterBar:hover {
+  background: var(--color-sage-50);
+}
+
+.posterBar:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus-sage);
+}
+
 .avatarSection {
   display: flex;
   gap: var(--space-3);
@@ -97,6 +115,24 @@
   gap: 6px;
 }
 
+.postContentButton {
+  border: none;
+  background: transparent;
+  padding: 0;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  cursor: pointer;
+  color: inherit;
+}
+
+.postContentButton:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus-sage);
+  border-radius: var(--radius-md);
+}
+
 .badge {
   display: inline-flex;
   align-items: center;
@@ -119,8 +155,8 @@
 }
 
 .badge-time {
-  background: #E8EDF5;
-  color: #384878;
+  background: var(--color-sky-100);
+  color: var(--color-sage-800);
 }
 
 .badge-verified {

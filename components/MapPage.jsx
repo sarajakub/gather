@@ -1,11 +1,12 @@
 'use client';
 
-import BottomNav from './BottomNav';
+import WebNav from './WebNav';
 import styles from './MapPage.module.css';
 
 export default function MapPage() {
   return (
     <div className={styles.page}>
+      <WebNav activePath="/map" />
       <div className={styles.header}>
         <h1 className={styles.title}>Map</h1>
         <p className={styles.subtitle}>Find help nearby</p>
@@ -24,9 +25,6 @@ export default function MapPage() {
         <p className={styles.placeholderText}>Map view coming soon</p>
         <p className={styles.placeholderSubtext}>Real-time help discovery on your local map</p>
       </div>
-
-      <div className={styles.bottomNavSpacer} />
-      <BottomNav activeTab="map" hasNotification={false} />
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import Link from 'next/link';
 import styles from './BottomSheet.module.css';
 
 const BottomSheet = ({ isOpen, post, onClose, onConfirm }) => {
@@ -27,7 +28,7 @@ const BottomSheet = ({ isOpen, post, onClose, onConfirm }) => {
         
         <div className={styles.content}>
           <div className={styles.header}>
-            <div className={styles.avatarSection}>
+            <Link href={`/people/${post.personSlug}`} className={styles.avatarSection}>
               <div className={styles.avatar} style={{ backgroundColor: post.avatar.bg }}>
                 {post.avatar.initials}
               </div>
@@ -39,7 +40,10 @@ const BottomSheet = ({ isOpen, post, onClose, onConfirm }) => {
                   <span className={styles.helpCountText}>{post.helpCount} helped</span>
                 </div>
               </div>
-            </div>
+            </Link>
+            <Link className={styles.profileLink} href={`/people/${post.personSlug}`}>
+              View profile
+            </Link>
           </div>
 
           <div className={styles.badges}>
@@ -74,7 +78,7 @@ const BottomSheet = ({ isOpen, post, onClose, onConfirm }) => {
               onClick={onConfirm}
               aria-label={`Confirm offer to help with: ${post.title}`}
             >
-              Confirm offer to help
+              Continue to message
             </button>
             <button
               className={styles.secondaryCta}

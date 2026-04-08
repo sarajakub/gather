@@ -1,0 +1,147 @@
+.page {
+  min-height: 100vh;
+  background: var(--color-canvas);
+  padding: var(--space-6);
+  color: var(--color-forest);
+  font-family: var(--font-ui);
+}
+
+.shell {
+  max-width: 1180px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  margin-bottom: var(--space-3);
+}
+
+.title {
+  margin: 0;
+  font-size: 28px;
+  line-height: var(--line-height-tight);
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--color-stone);
+  font-size: var(--text-body);
+}
+
+.formCard {
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-bottom: var(--space-3);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: var(--text-body-sm);
+  color: var(--color-sage-700);
+  font-weight: 500;
+}
+
+.input,
+.textarea {
+  border: 1px solid var(--color-sage-100);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  font-size: var(--text-body);
+  font-family: var(--font-ui);
+  color: var(--color-forest);
+  background: var(--color-white);
+}
+
+.textarea {
+  resize: vertical;
+}
+
+.input:focus-visible,
+.textarea:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus-sage);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.cancelBtn,
+.submitBtn {
+  border-radius: var(--radius-pill);
+  padding: 10px 16px;
+  font-size: var(--text-body-sm);
+  font-weight: 500;
+  text-decoration: none;
+  border: 1px solid transparent;
+}
+
+.cancelBtn {
+  border-color: var(--color-sage-300);
+  color: var(--color-sage-700);
+}
+
+.submitBtn {
+  border: none;
+  background: var(--color-action);
+  color: var(--color-white);
+  cursor: pointer;
+}
+
+.submitBtn:hover:not(:disabled) {
+  background: var(--color-peach-600);
+}
+
+.submitBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.successBanner {
+  background: var(--color-sage-50);
+  color: var(--color-sage-700);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  font-size: var(--text-body-sm);
+}
+
+@media (max-width: 760px) {
+  .page {
+    padding: var(--space-3);
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .title {
+    font-size: 28px;
+  }
+
+  .header,
+  .formCard {
+    padding: var(--space-4);
+  }
+}

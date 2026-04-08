@@ -1,0 +1,124 @@
+.page {
+  min-height: 100vh;
+  background: var(--color-canvas);
+  padding: var(--space-6);
+  font-family: var(--font-ui);
+}
+
+.shell {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.card {
+  margin-top: var(--space-2);
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.hero {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: var(--color-forest);
+}
+
+.title {
+  margin: 0;
+  font-size: 32px;
+  line-height: var(--line-height-tight);
+  color: var(--color-forest);
+}
+
+.meta {
+  margin: 4px 0 0;
+  color: var(--color-stone);
+  font-size: var(--text-body);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.statItem {
+  background: var(--color-sage-50);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+}
+
+.statValue {
+  font-size: var(--text-headline);
+  font-weight: 500;
+  color: var(--color-forest);
+}
+
+.statLabel {
+  font-size: var(--text-caption);
+  color: var(--color-stone);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.bio {
+  margin: 0;
+  color: var(--color-stone);
+  font-size: var(--text-body);
+  line-height: 1.7;
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.primaryBtn,
+.secondaryBtn,
+.backLink {
+  text-decoration: none;
+  border-radius: var(--radius-pill);
+  padding: 10px 14px;
+  font-size: var(--text-body-sm);
+  font-weight: 500;
+}
+
+.primaryBtn {
+  color: var(--color-white);
+  background: var(--color-action);
+}
+
+.secondaryBtn,
+.backLink {
+  color: var(--color-sage-700);
+  border: 1px solid var(--color-sage-300);
+}
+
+@media (max-width: 760px) {
+  .page {
+    padding: var(--space-3);
+  }
+
+  .title {
+    font-size: 28px;
+  }
+
+  .card {
+    padding: var(--space-4);
+  }
+}

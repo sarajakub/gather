@@ -46,82 +46,22 @@
 */
 
 import React, { useState, useRef } from 'react';
+import Link from 'next/link';
 import PostCard from './PostCard';
 import BottomSheet from './BottomSheet';
-import BottomNav from './BottomNav';
+import { currentUser, posts } from '@/data/mockCommunity';
+import WebNav from './WebNav';
 import styles from './HomePage.module.css';
 
-// Mock user data (would come from auth/context in real app)
-const mockUser = {
-  name: 'Diane',
-  neighborhood: 'Inwood',
-  avatar: { initials: 'D', bg: '#E0EED0' },
-  skills: ['Babysitting', 'French', 'Dog walking', 'Cooking', 'Tech help'],
-};
-
-// Mock posts data
-const mockPosts = [
-  {
-    id: 1,
-    name: 'Marcus',
-    neighborhood: 'Inwood',
-    avatar: { initials: 'M', bg: '#FDE8D8' },
-    rating: 4,
-    helpCount: 12,
-    title: 'Help move boxes into 3rd floor apartment',
-    body: "Moving this weekend. Need 2-3 people for 2-3 hours. I'll provide coffee and snacks. Heavy boxes but manageable.",
-    bodyFull: "Moving this weekend (Saturday 10am). Need 2-3 people for 2-3 hours. I'll provide coffee and snacks. Boxes are heavy but manageable. Pretty straightforward stuff — just need extra hands.",
-    distance: '0.3 miles away',
-    timeframe: 'This Saturday',
-    badges: [
-      { type: 'need', label: 'Physical help' },
-      { type: 'time', label: 'Saturday 10am' },
-      { type: 'verified', label: 'Verified' },
-    ],
-  },
-  {
-    id: 2,
-    name: 'Sofia',
-    neighborhood: 'Inwood',
-    avatar: { initials: 'S', bg: '#ECEEE8' },
-    rating: 5,
-    helpCount: 8,
-    title: "Teaching my son to read (ages 7-8)",
-    body: "Looking for someone patient and warm to tutor my son twice a week. He knows basic phonics and needs help with comprehension and confidence.",
-    bodyFull: "Looking for someone patient and warm to tutor my son twice a week in the evenings. He's 7 and knows basic phonics but struggles with comprehension and needs a confidence boost. His teacher suggested extra support. Very open to creative approaches.",
-    distance: '0.7 miles away',
-    timeframe: 'Evenings, 2x/week',
-    badges: [
-      { type: 'need', label: 'Tutoring' },
-      { type: 'time', label: 'Weekday evenings' },
-      { type: 'verified', label: 'Verified' },
-    ],
-  },
-  {
-    id: 3,
-    name: 'James',
-    neighborhood: 'Washington Heights',
-    avatar: { initials: 'J', bg: '#FDF0D0' },
-    rating: 3,
-    helpCount: 5,
-    title: "Fix my laptop (won't turn on)",
-    body: "My laptop stopped turning on last week. I'm not technical but I'll buy lunch or make tea for whoever helps me troubleshoot. Data backup would be huge too if possible.",
-    bodyFull: "My laptop stopped turning on last week and I'm losing it — I have important files on there. I'm not technical at all but happy to learn. I'll cook you dinner or buy lunch. Data backup would be literally lifesaving.",
-    distance: '0.5 miles away',
-    timeframe: 'Any weekday morning',
-    badges: [
-      { type: 'need', label: 'Tech help' },
-      { type: 'time', label: 'Morning' },
-    ],
-  },
-];
-
-const HomePage = ({ currentPage ='feed' }) => {
+const HomePage = () => {
   const [selectedPost, setSelectedPost] = useState(null);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+  const [showAllPosts, setShowAllPosts] = useState(false);
   const feedSectionRef = useRef(null);
 
-  const handleOfferClick = (post) => {
+  const visiblePosts = showAllPosts ? posts : posts.slice(0, 3);
+
+  const handleOpenPost = (post) => {
     setSelectedPost(post);
     setIsBottomSheetOpen(true);
   };
@@ -132,123 +72,119 @@ const HomePage = ({ currentPage ='feed' }) => {
   };
 
   const handleConfirmOffer = () => {
-    // In real app, would submit offer here
-    alert(`Offer sent to ${selectedPost.name}!`);
+    if (!selectedPost) {
+      return;
+    }
+
+    const params = new URLSearchParams({
+      to: selectedPost.personSlug,
+      postId: String(selectedPost.id),
+      postTitle: selectedPost.title,
+    });
+
     handleBottomSheetClose();
+    window.location.href = `/messages?${params.toString()}`;
   };
 
   const handleSeeWhoNeedsHelp = () => {
+    setShowAllPosts(true);
     feedSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
     <main className={styles.page}>
-      {/* Welcome Header */}
-      <section className={styles.welcomeSection}>
-        <div className={styles.welcomeHeaderContainer}>
-          <h1 className={styles.greeting}>Good morning, {mockUser.name}.</h1>
-          <p className={styles.subtitle}>Here&apos;s what&apos;s happening in {mockUser.neighborhood} today.</p>
-        </div>
-      </section>
+      <div className={styles.shell}>
+        <WebNav activePath="/home" />
 
-      {/* Profile Snapshot */}
-      <section className={styles.profileSnapshotSection}>
-        <div className={styles.profileCard}>
-          <div className={styles.profileCardLeft}>
-            <div className={styles.profileAvatar} style={{ backgroundColor: mockUser.avatar.bg }}>
-              {mockUser.avatar.initials}
-            </div>
-            <div className={styles.profileCardInfo}>
-              <div className={styles.profileName}>{mockUser.name}</div>
-              <div className={styles.profileNeighborhood}>{mockUser.neighborhood}</div>
-              <div className={styles.profileSkills}>
-                {mockUser.skills.slice(0, 2).map((skill, idx) => (
-                  <span key={idx} className={styles.skillBadge}>
-                    {skill}
-                  </span>
+        <div className={styles.contentGrid}>
+          <section className={styles.mainColumn}>
+            <section className={styles.welcomeSection}>
+              <div className={styles.welcomeHeaderContainer}>
+                <h1 className={styles.greeting}>Good morning, {currentUser.name}.</h1>
+                <p className={styles.subtitle}>
+                  Here&apos;s what&apos;s happening in {currentUser.neighborhood} today.
+                </p>
+              </div>
+            </section>
+
+            <section className={styles.feedSection} ref={feedSectionRef}>
+              <div className={styles.sectionLabelWrapper}>
+                <h2 className={styles.sectionLabel}>Near you · {currentUser.neighborhood.toUpperCase()}</h2>
+                <p className={styles.sectionMeta}>
+                  Showing {visiblePosts.length} of {posts.length} requests
+                </p>
+              </div>
+              <div className={styles.postsList}>
+                {visiblePosts.map((post) => (
+                  <PostCard
+                    key={post.id}
+                    post={post}
+                    onOfferClick={handleOpenPost}
+                    onOpenPost={handleOpenPost}
+                  />
                 ))}
               </div>
-            </div>
-          </div>
-          <button
-            className={styles.viewProfileBtn}
-            onClick={() => window.location.href = '/profile'}
-            aria-label="View your full profile"
-          >
-            View profile
-          </button>
-        </div>
-      </section>
+              {!showAllPosts && (
+                <button
+                  type="button"
+                  className={styles.showAllBtn}
+                  onClick={() => setShowAllPosts(true)}
+                >
+                  Show all posts
+                </button>
+              )}
+            </section>
+          </section>
 
-      {/* Primary CTA Banner */}
-      <section className={styles.ctaBannerSection}>
-        <div className={styles.ctaBanner}>
-          <h2 className={styles.ctaBannerHeadline}>Someone near you needs help.</h2>
-          <p className={styles.ctaBannerSubtext}>
-            Browse posts in your neighborhood and offer what you can.
-          </p>
-          <button
-            className={styles.ctaBannerButton}
-            onClick={handleSeeWhoNeedsHelp}
-            aria-label="See who needs help"
-          >
-            See who needs help
-          </button>
-        </div>
-      </section>
+          <aside className={styles.sideColumn}>
+            <section className={styles.profileSnapshotSection}>
+              <div className={styles.profileCard}>
+                <div className={styles.profileCardLeft}>
+                  <div className={styles.profileAvatar} style={{ backgroundColor: currentUser.avatarBg }}>
+                    {currentUser.initials}
+                  </div>
+                  <div className={styles.profileCardInfo}>
+                    <div className={styles.profileName}>{currentUser.name}</div>
+                    <div className={styles.profileNeighborhood}>{currentUser.neighborhood}</div>
+                    <div className={styles.profileSkills}>
+                      {currentUser.skills.slice(0, 3).map((skill, idx) => (
+                        <span key={idx} className={styles.skillBadge}>
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <Link className={styles.viewProfileBtn} href="/profile" aria-label="View your full profile">
+                  View profile
+                </Link>
+              </div>
+            </section>
 
-      {/* Feed Section */}
-      <section className={styles.feedSection} ref={feedSectionRef}>
-        <div className={styles.sectionLabelWrapper}>
-          <h2 className={styles.sectionLabel}>Near you · {mockUser.neighborhood.toUpperCase()}</h2>
+            <section className={styles.ctaBannerSection}>
+              <div className={styles.ctaBanner}>
+                <h2 className={styles.ctaBannerHeadline}>Someone near you needs help.</h2>
+                <p className={styles.ctaBannerSubtext}>
+                  Browse posts in your neighborhood and offer what you can.
+                </p>
+                <button
+                  className={styles.ctaBannerButton}
+                  onClick={handleSeeWhoNeedsHelp}
+                  aria-label="See who needs help"
+                >
+                  See who needs help
+                </button>
+              </div>
+            </section>
+          </aside>
         </div>
-        <div className={styles.postsList}>
-          {mockPosts.map((post) => (
-            <PostCard
-              key={post.id}
-              post={post}
-              onOfferClick={handleOfferClick}
-            />
-          ))}
-        </div>
-      </section>
+      </div>
 
-      {/* What You're Offering */}
-      <section className={styles.skillsSection}>
-        <div className={styles.sectionLabelWrapper}>
-          <h2 className={styles.sectionLabel}>What you bring</h2>
-        </div>
-        <div className={styles.skillsRow}>
-          {mockUser.skills.map((skill, idx) => (
-            <span key={idx} className={styles.skillChip}>
-              {skill}
-            </span>
-          ))}
-        </div>
-        <button
-          className={styles.editSkillsLink}
-          onClick={() => window.location.href = '/profile'}
-          aria-label="Edit your skills"
-        >
-          Edit your skills
-        </button>
-      </section>
-
-      {/* Spacing for bottom nav */}
-      <div className={styles.bottomNavSpacer} />
-
-      {/* Bottom Sheet */}
       <BottomSheet
         isOpen={isBottomSheetOpen}
         post={selectedPost}
         onClose={handleBottomSheetClose}
         onConfirm={handleConfirmOffer}
-      />
-
-      {/* Bottom Navigation */}
-      <BottomNav
-        activeTab={currentPage}
-        hasNotification={true}
       />
     </main>
   );
