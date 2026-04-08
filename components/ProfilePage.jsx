@@ -6,7 +6,7 @@ import BottomNav from '@/components/BottomNav';
 import styles from './ProfilePage.module.css';
 
 const ProfilePage = () => {
-  const [profile, setProfile] = useState({
+  const [profile] = useState({
     name: 'Diane',
     neighborhood: 'Inwood',
     initials: 'D',
