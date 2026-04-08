@@ -1,14 +1,29 @@
 "use client";
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { commitments, people, posts } from '@/data/mockCommunity';
 import styles from './CommitmentsPage.module.css';
 
 export default function CommitmentsPage() {
   const [viewMode, setViewMode] = useState('list');
+  const [listTab, setListTab] = useState('upcoming');
   const [selectedId, setSelectedId] = useState(null);
   const [rescheduleRequests, setRescheduleRequests] = useState({});
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const requestedView = params.get('view');
+    const requestedTab = params.get('tab');
+
+    if (requestedView && ['list', 'weekly', 'monthly'].includes(requestedView)) {
+      setViewMode(requestedView);
+    }
+
+    if (requestedTab && ['upcoming', 'past'].includes(requestedTab)) {
+      setListTab(requestedTab);
+    }
+  }, []);
 
   const withPost = useMemo(
     () =>
@@ -156,17 +171,36 @@ export default function CommitmentsPage() {
   const renderListView = () => (
     <>
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Upcoming</h2>
-        <div className={styles.list}>
-          {upcoming.map((item) => renderCommitmentCard(item, { showTime: true, showInlineProfile: true }))}
+        <div className={styles.listTabs}>
+          <button
+            type="button"
+            className={`${styles.listTabButton} ${listTab === 'upcoming' ? styles.listTabButtonActive : ''}`}
+            onClick={() => setListTab('upcoming')}
+          >
+            Upcoming
+          </button>
+          <button
+            type="button"
+            className={`${styles.listTabButton} ${listTab === 'past' ? styles.listTabButtonActive : ''}`}
+            onClick={() => setListTab('past')}
+          >
+            Past
+          </button>
         </div>
-      </section>
 
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Completed</h2>
-        <div className={styles.list}>
-          {completed.map((item) => renderCommitmentCard(item, { showTime: true, showInlineProfile: true }))}
-        </div>
+        {listTab === 'upcoming' ? (
+          <div className={styles.list}>
+            {upcoming.map((item) =>
+              renderCommitmentCard(item, { showTime: true, showInlineProfile: true })
+            )}
+          </div>
+        ) : (
+          <div className={styles.list}>
+            {completed.map((item) =>
+              renderCommitmentCard(item, { showTime: true, showInlineProfile: true })
+            )}
+          </div>
+        )}
       </section>
     </>
   );

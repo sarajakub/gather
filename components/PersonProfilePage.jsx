@@ -1,9 +1,10 @@
 import Link from 'next/link';
-import { people } from '@/data/mockCommunity';
+import { people, posts } from '@/data/mockCommunity';
 import styles from './PersonProfilePage.module.css';
 
 export default function PersonProfilePage({ slug }) {
   const person = people[slug] || null;
+  const activePosts = posts.filter((post) => post.personSlug === slug);
 
   if (!person) {
     return (
@@ -44,6 +45,29 @@ export default function PersonProfilePage({ slug }) {
           </div>
 
           <p className={styles.bio}>{person.bio}</p>
+
+          <section className={styles.activePostsSection}>
+            <div className={styles.sectionHeader}>
+              <h2 className={styles.sectionTitle}>Active requests for help</h2>
+              <span className={styles.sectionCount}>{activePosts.length}</span>
+            </div>
+
+            {activePosts.length > 0 ? (
+              <div className={styles.activePostsList}>
+                {activePosts.map((post) => (
+                  <article key={post.id} className={styles.postItem}>
+                    <p className={styles.postTitle}>{post.title}</p>
+                    <p className={styles.postMeta}>
+                      {post.timeframe} • {post.distance}
+                    </p>
+                    <p className={styles.postBody}>{post.body}</p>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <p className={styles.emptyState}>No active help requests right now.</p>
+            )}
+          </section>
 
           <div className={styles.actions}>
             <Link href={`/messages?to=${person.slug}`} className={styles.primaryBtn}>

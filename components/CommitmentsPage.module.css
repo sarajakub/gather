@@ -80,6 +80,29 @@
   letter-spacing: 0.1em;
 }
 
+.listTabs {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.listTabButton {
+  border: 1px solid var(--color-border);
+  background: var(--color-white);
+  color: var(--color-forest);
+  border-radius: var(--radius-pill);
+  padding: 8px 12px;
+  font: inherit;
+  font-size: var(--text-body-sm);
+  cursor: pointer;
+}
+
+.listTabButtonActive {
+  border-color: var(--color-sage-700);
+  background: var(--color-sage-700);
+  color: var(--color-white);
+}
+
 .list {
   display: flex;
   flex-direction: column;
