@@ -35,7 +35,7 @@ export default function LandingPage() {
         <section className={styles.heroGrid}>
           <article className={styles.heroCard}>
             <p className={styles.eyebrow}>Neighbors helping neighbors</p>
-            <h1 className={styles.heroTitle}>Gather around to help your community.</h1>
+            <h1 className={styles.heroTitle}>Bringing the village back.</h1>
             <p className={styles.heroBody}>
               Gather is a local mutual-aid app that makes it easy to ask for support, offer care, and show
               up for each other every day.
