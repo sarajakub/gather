@@ -11,10 +11,6 @@ const navItems = [
 ];
 
 function isActive(pathname: string, href: string) {
-  if (href === "/home") {
-    return pathname === "/" || pathname === "/home";
-  }
-
   return pathname.startsWith(href);
 }
 

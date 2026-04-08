@@ -19,6 +19,38 @@
   margin-bottom: var(--space-3);
 }
 
+.viewSwitcher {
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3);
+  margin-bottom: var(--space-3);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.switchButton {
+  border: 1px solid var(--color-border);
+  background: var(--color-white);
+  color: var(--color-forest);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease;
+}
+
+.switchButton:hover {
+  border-color: var(--color-sage-500);
+}
+
+.switchButtonActive {
+  border-color: var(--color-sage-700);
+  background: var(--color-sage-700);
+  color: var(--color-white);
+}
+
 .title {
   margin: 0;
   font-size: 28px;
@@ -48,6 +80,29 @@
   letter-spacing: 0.1em;
 }
 
+.listTabs {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.listTabButton {
+  border: 1px solid var(--color-border);
+  background: var(--color-white);
+  color: var(--color-forest);
+  border-radius: var(--radius-pill);
+  padding: 8px 12px;
+  font: inherit;
+  font-size: var(--text-body-sm);
+  cursor: pointer;
+}
+
+.listTabButtonActive {
+  border-color: var(--color-sage-700);
+  background: var(--color-sage-700);
+  color: var(--color-white);
+}
+
 .list {
   display: flex;
   flex-direction: column;
@@ -57,11 +112,42 @@
 .itemCard {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
+  background: var(--color-white);
+  overflow: hidden;
+}
+
+.itemSummaryButton {
+  width: 100%;
+  border: 0;
+  background: transparent;
   padding: var(--space-3);
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--space-3);
+  text-align: left;
+  cursor: pointer;
+}
+
+.itemSummaryCompact {
+  justify-content: flex-start;
+  padding: 8px;
+}
+
+.itemSummaryButtonActive {
+  background: color-mix(in srgb, var(--color-sage-100) 45%, transparent);
+}
+
+.summaryRight {
+  display: grid;
+  gap: 4px;
+  justify-items: end;
+}
+
+.expandHint {
+  margin: 0;
+  color: var(--color-stone);
+  font-size: var(--text-caption);
 }
 
 .itemTitle {
@@ -88,6 +174,260 @@
   text-decoration: underline;
 }
 
+.itemDetailsCard {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-white);
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.detailsLabel {
+  margin: 0;
+  color: var(--color-stone);
+  font-size: var(--text-caption);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.detailsTitle {
+  margin: 0;
+  color: var(--color-forest);
+  font-size: var(--text-body);
+  font-weight: 600;
+}
+
+.detailsBody {
+  margin: 0;
+  color: var(--color-stone);
+  font-size: var(--text-body-sm);
+  line-height: 1.55;
+}
+
+.detailsMeta {
+  margin: 0;
+  color: var(--color-stone);
+  font-size: var(--text-caption);
+}
+
+.detailsActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.rescheduleComposer {
+  margin-top: var(--space-2);
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.composerTitle {
+  margin: 0;
+  color: var(--color-forest);
+  font-size: var(--text-body-sm);
+  font-weight: 600;
+}
+
+.composerGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.composerField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.composerField span {
+  font-size: var(--text-caption);
+  color: var(--color-stone);
+}
+
+.composerField input,
+.composerField textarea {
+  border: 1px solid var(--color-sage-100);
+  border-radius: var(--radius-md);
+  padding: 8px 10px;
+  font: inherit;
+  color: var(--color-forest);
+  background: var(--color-white);
+}
+
+.composerField textarea {
+  resize: vertical;
+}
+
+.composerField input:focus-visible,
+.composerField textarea:focus-visible,
+.switchButton:focus-visible,
+.listTabButton:focus-visible,
+.itemSummaryButton:focus-visible,
+.rescheduleBtn:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus-sage);
+}
+
+.composerActions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.sendRescheduleBtn {
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--color-action);
+  color: var(--color-white);
+  padding: 9px 14px;
+  font: inherit;
+  font-size: var(--text-body-sm);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.sendRescheduleBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.detailsLink {
+  text-decoration: none;
+  color: var(--color-sage-700);
+  font-size: var(--text-body-sm);
+  font-weight: 500;
+}
+
+.detailsLink:hover {
+  text-decoration: underline;
+}
+
+.rescheduleBtn {
+  border: 1px solid var(--color-sage-700);
+  background: var(--color-white);
+  color: var(--color-sage-700);
+  border-radius: var(--radius-pill);
+  padding: 8px 12px;
+  font: inherit;
+  font-size: var(--text-body-sm);
+  cursor: pointer;
+}
+
+.rescheduleBtn:disabled {
+  border-color: var(--color-border);
+  color: var(--color-stone);
+  cursor: default;
+}
+
+.weekGrid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--space-2);
+  align-items: start;
+}
+
+.calendarDayCard {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-2);
+  background: var(--color-white);
+  min-height: 150px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.calendarDayLabel {
+  margin: 0;
+  color: var(--color-forest);
+  font-size: var(--text-body-sm);
+  font-weight: 600;
+}
+
+.calendarDayItems {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.calendarItemWrap {
+  min-width: 0;
+}
+
+.emptyText {
+  margin: 0;
+  color: var(--color-stone);
+  font-size: var(--text-caption);
+}
+
+.monthGrid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--space-2);
+  align-items: start;
+}
+
+.monthCell {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-white);
+  min-height: 128px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.monthCellMuted {
+  opacity: 0.6;
+}
+
+.monthCellDay {
+  margin: 0;
+  color: var(--color-stone);
+  font-size: var(--text-caption);
+  font-weight: 600;
+}
+
+.monthCellItemWrap {
+  min-width: 0;
+}
+
+.monthCellItemWrap .itemCard,
+.calendarDayItems .itemCard,
+.calendarItemWrap .itemCard {
+  border-color: color-mix(in srgb, var(--color-border) 65%, transparent);
+}
+
+.monthCellItemWrap .itemSummaryButton,
+.calendarDayItems .itemSummaryButton,
+.calendarItemWrap .itemSummaryButton {
+  padding: 8px;
+}
+
+.monthCellItemWrap .itemMeta,
+.calendarDayItems .itemMeta,
+.calendarItemWrap .itemMeta,
+.monthCellItemWrap .expandHint,
+.calendarDayItems .expandHint,
+.calendarItemWrap .expandHint {
+  font-size: 11px;
+}
+
+.monthCellItemWrap .itemTitle,
+.calendarDayItems .itemTitle,
+.calendarItemWrap .itemTitle {
+  font-size: var(--text-body-sm);
+  line-height: 1.35;
+}
+
 @media (max-width: 760px) {
   .page {
     padding: var(--space-3);
@@ -98,8 +438,30 @@
     padding: var(--space-4);
   }
 
-  .itemCard {
+  .itemSummaryButton {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .summaryRight {
+    justify-items: start;
+  }
+
+  .weekGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .monthGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .composerGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .monthCellItemWrap .itemSummaryButton,
+  .calendarDayItems .itemSummaryButton,
+  .calendarItemWrap .itemSummaryButton {
+    padding: 8px;
   }
 }

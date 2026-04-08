@@ -1,31 +1,26 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { commitments, people } from '@/data/mockCommunity';
 import styles from './ProfilePage.module.css';
 
 const SKILL_OPTIONS = [
-  'Babysitting',
   'Cooking',
-  'Dog walking',
-  'Cat care',
   'Tutoring math',
-  'Tutoring reading',
-  'Homework help',
+  'Writing support',
   'Tech help',
   'Phone setup',
   'Computer repair',
   'Grocery pickup',
   'Meal prep',
   'Elder check-ins',
-  'Child pickup',
   'Yard cleanup',
   'Moving help',
   'Furniture assembly',
   'Bike repair',
   'Translation',
   'Ride sharing',
-  'Pet sitting',
   'Laundry help',
   'Errand running',
   'Resume support',
@@ -70,7 +65,7 @@ const AVAILABILITY_OPTIONS = [
   'Sunday mornings',
   'Sunday afternoons',
   'Sunday evenings',
-  'School pickup hours',
+  'Early afternoons',
   'Lunch break',
   'Overnight emergencies',
   'On-call weekends',
@@ -97,7 +92,7 @@ const EDITABLE_FIELDS = {
 };
 
 const ProfilePage = () => {
-  const [profile] = useState({
+  const [profile, setProfile] = useState({
     name: 'Diane',
     neighborhood: 'Inwood',
     initials: 'D',
@@ -105,7 +100,7 @@ const ProfilePage = () => {
     helped: 8,
     rating: 4.9,
     travelTime: '20 min',
-    skills: ['Babysitting', 'French', 'Dog walking', 'Cooking', 'Tech help'],
+    skills: ['Translation', 'French', 'Cooking', 'Tech help', 'Errand running'],
     languages: ['English', 'French', 'Spanish'],
     availability: ['Weekday evenings', 'Saturday mornings'],
   });
@@ -113,7 +108,34 @@ const ProfilePage = () => {
   const [activeEditor, setActiveEditor] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [draftValues, setDraftValues] = useState([]);
-  const myCommitments = commitments.filter((item) => item.status === 'upcoming');
+
+  const byMostRecent = (items) =>
+    [...items].sort(
+      (a, b) => new Date(b.scheduledAt).getTime() - new Date(a.scheduledAt).getTime()
+    );
+
+  const myUpcomingCommitments = byMostRecent(
+    commitments.filter((item) => item.status === 'upcoming')
+  );
+  const myCompletedCommitments = byMostRecent(
+    commitments.filter((item) => item.status === 'completed')
+  );
+
+  const previouslyHelped = myCompletedCommitments.reduce((acc, item) => {
+    if (!acc.find((entry) => entry.slug === item.personSlug)) {
+      const person = people[item.personSlug];
+      if (person) {
+        acc.push({
+          slug: person.slug,
+          name: person.name,
+          count: myCompletedCommitments.filter(
+            (commitment) => commitment.personSlug === person.slug
+          ).length,
+        });
+      }
+    }
+    return acc;
+  }, []);
 
   const openEditor = (field) => {
     setActiveEditor(field);
@@ -274,8 +296,29 @@ const ProfilePage = () => {
           <div className={styles.sectionHeader}>
             <h3>Your commitments</h3>
           </div>
+
+          <div className={styles.subSection}>
+            <h4 className={styles.subSectionTitle}>People you&apos;ve helped</h4>
+            {previouslyHelped.length > 0 ? (
+              <div className={styles.helpedList}>
+                {previouslyHelped.map((person) => (
+                  <article key={person.slug} className={styles.helpedItem}>
+                    <p className={styles.helpedName}>{person.name}</p>
+                    <p className={styles.helpedMeta}>
+                      {person.count} {person.count === 1 ? 'commitment' : 'commitments'} completed
+                    </p>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <p className={styles.emptyCommitments}>No completed commitments yet.</p>
+            )}
+          </div>
+
+          <div className={styles.subSection}>
+            <h4 className={styles.subSectionTitle}>Upcoming</h4>
           <div className={styles.commitmentList}>
-            {myCommitments.map((item) => {
+            {myUpcomingCommitments.map((item) => {
               const person = people[item.personSlug];
               return (
                 <article key={item.id} className={styles.commitmentItem}>
@@ -287,6 +330,16 @@ const ProfilePage = () => {
                 </article>
               );
             })}
+          </div>
+
+            <div className={styles.commitmentActions}>
+              <Link href="/commitments?view=list&tab=upcoming" className={styles.moreBtn}>
+                See more
+              </Link>
+              <Link href="/commitments?view=list&tab=past" className={styles.moreBtnSecondary}>
+                View past
+              </Link>
+            </div>
           </div>
         </section>
 
