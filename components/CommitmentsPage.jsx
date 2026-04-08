@@ -9,8 +9,13 @@ export default function CommitmentsPage() {
   const [viewMode, setViewMode] = useState('list');
   const [listTab, setListTab] = useState('upcoming');
   const [selectedId, setSelectedId] = useState(null);
+  const [statusById, setStatusById] = useState(() =>
+    commitments.reduce((acc, item) => ({ ...acc, [item.id]: item.status }), {})
+  );
   const [rescheduleRequests, setRescheduleRequests] = useState({});
   const [rescheduleDraft, setRescheduleDraft] = useState({ date: '', time: '', note: '' });
+  const [reviewDraft, setReviewDraft] = useState({ rating: 0, note: '' });
+  const [submittedReviews, setSubmittedReviews] = useState({});
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -30,9 +35,10 @@ export default function CommitmentsPage() {
     () =>
       commitments.map((item) => ({
         ...item,
+        status: statusById[item.id] || item.status,
         post: posts.find((post) => post.id === item.postId) || null,
       })),
-    []
+    [statusById]
   );
 
   const byMostRecent = (items) =>
@@ -170,6 +176,28 @@ export default function CommitmentsPage() {
     window.location.href = `/messages?to=${person.slug}`;
   };
 
+  const handleMarkComplete = (item) => {
+    setStatusById((prev) => ({ ...prev, [item.id]: 'completed' }));
+    setListTab('past');
+    setSelectedId(item.id);
+  };
+
+  const handleSubmitReview = (item) => {
+    if (!reviewDraft.rating) {
+      return;
+    }
+
+    setSubmittedReviews((prev) => ({
+      ...prev,
+      [item.id]: {
+        rating: reviewDraft.rating,
+        note: reviewDraft.note.trim(),
+      },
+    }));
+
+    setReviewDraft({ rating: 0, note: '' });
+  };
+
   const renderCommitmentCard = (item, options = {}) => {
     const { showTime = false, showInlineProfile = true, compactMeta = false } = options;
     const person = people[item.personSlug];
@@ -214,6 +242,8 @@ export default function CommitmentsPage() {
       selectedCommitment.post?.body ||
       'No post details available.';
     const isRescheduleOpen = Boolean(rescheduleRequests[selectedCommitment.id]);
+    const isCompleted = selectedCommitment.status === 'completed';
+    const existingReview = submittedReviews[selectedCommitment.id] || null;
 
     return (
       <section className={styles.section}>
@@ -229,13 +259,24 @@ export default function CommitmentsPage() {
             <Link className={styles.detailsLink} href={`/people/${person.slug}`}>
               View {person.name}&apos;s profile
             </Link>
-            <button
-              type="button"
-              className={styles.rescheduleBtn}
-              onClick={() => requestReschedule(selectedCommitment)}
-            >
-              Request reschedule
-            </button>
+            {!isCompleted && (
+              <button
+                type="button"
+                className={styles.completeBtn}
+                onClick={() => handleMarkComplete(selectedCommitment)}
+              >
+                Complete commitment
+              </button>
+            )}
+            {!isCompleted && (
+              <button
+                type="button"
+                className={styles.rescheduleBtn}
+                onClick={() => requestReschedule(selectedCommitment)}
+              >
+                Request reschedule
+              </button>
+            )}
           </div>
 
           {isRescheduleOpen && (
@@ -285,6 +326,57 @@ export default function CommitmentsPage() {
                   Send reschedule message
                 </button>
               </div>
+            </div>
+          )}
+
+          {isCompleted && (
+            <div className={styles.reviewComposer}>
+              <p className={styles.composerTitle}>How did it go with {person.name}?</p>
+
+              {existingReview ? (
+                <p className={styles.reviewSubmitted}>
+                  Review saved: {existingReview.rating}/5{existingReview.note ? ` - ${existingReview.note}` : ''}
+                </p>
+              ) : (
+                <>
+                  <div className={styles.ratingRow}>
+                    {[1, 2, 3, 4, 5].map((value) => (
+                      <button
+                        key={value}
+                        type="button"
+                        className={`${styles.ratingDot} ${reviewDraft.rating >= value ? styles.ratingDotActive : ''}`}
+                        onClick={() => setReviewDraft((prev) => ({ ...prev, rating: value }))}
+                        aria-label={`Rate ${value} out of 5`}
+                      >
+                        {value}
+                      </button>
+                    ))}
+                  </div>
+
+                  <label className={styles.composerField}>
+                    <span>Short review</span>
+                    <textarea
+                      rows={3}
+                      value={reviewDraft.note}
+                      onChange={(event) =>
+                        setReviewDraft((prev) => ({ ...prev, note: event.target.value }))
+                      }
+                      placeholder="Share what was helpful"
+                    />
+                  </label>
+
+                  <div className={styles.composerActions}>
+                    <button
+                      type="button"
+                      className={styles.sendRescheduleBtn}
+                      onClick={() => handleSubmitReview(selectedCommitment)}
+                      disabled={!reviewDraft.rating}
+                    >
+                      Save review
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           )}
         </article>

@@ -91,6 +91,39 @@ const EDITABLE_FIELDS = {
   },
 };
 
+const REWARD_LEVELS = [
+  {
+    id: 'starter',
+    title: 'Starter Circle',
+    requiredHelps: 0,
+    rewards: ['Community shoutout badge'],
+  },
+  {
+    id: 'neighbor-spark',
+    title: 'Neighbor Spark',
+    requiredHelps: 5,
+    rewards: ['Free Dunkin coffee'],
+  },
+  {
+    id: 'block-ally',
+    title: 'Block Ally',
+    requiredHelps: 12,
+    rewards: ['MTA subway pass (1 day)'],
+  },
+  {
+    id: 'community-anchor',
+    title: 'Community Anchor',
+    requiredHelps: 22,
+    rewards: ['Free Dunkin coffee', 'MTA subway pass (7 day)'],
+  },
+  {
+    id: 'gather-champion',
+    title: 'Gather Champion',
+    requiredHelps: 36,
+    rewards: ['Priority partner rewards bundle'],
+  },
+];
+
 const ProfilePage = () => {
   const [profile, setProfile] = useState({
     name: 'Diane',
@@ -108,6 +141,7 @@ const ProfilePage = () => {
   const [activeEditor, setActiveEditor] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [draftValues, setDraftValues] = useState([]);
+  const [openRewardLevelId, setOpenRewardLevelId] = useState(null);
 
   const byMostRecent = (items) =>
     [...items].sort(
@@ -136,6 +170,21 @@ const ProfilePage = () => {
     }
     return acc;
   }, []);
+
+  const currentLevelIndex = REWARD_LEVELS.reduce(
+    (bestIndex, level, index) =>
+      profile.helped >= level.requiredHelps ? index : bestIndex,
+    0
+  );
+  const currentLevel = REWARD_LEVELS[currentLevelIndex];
+  const nextLevel = REWARD_LEVELS[currentLevelIndex + 1] || null;
+  const currentThreshold = currentLevel.requiredHelps;
+  const nextThreshold = nextLevel ? nextLevel.requiredHelps : currentThreshold;
+  const helpsInCurrentStage = profile.helped - currentThreshold;
+  const helpsNeededInStage = Math.max(nextThreshold - currentThreshold, 1);
+  const stageProgress = nextLevel
+    ? Math.min((helpsInCurrentStage / helpsNeededInStage) * 100, 100)
+    : 100;
 
   const openEditor = (field) => {
     setActiveEditor(field);
@@ -285,6 +334,66 @@ const ProfilePage = () => {
           <div className={styles.stat}>
             <div className={styles.statNumber}>{profile.travelTime}</div>
             <div className={styles.statLabel}>Travel range</div>
+          </div>
+        </section>
+
+        <section className={styles.rewardSection}>
+          <div className={styles.rewardHeader}>
+            <div>
+              <p className={styles.rewardEyebrow}>Community impact rewards</p>
+              <h3 className={styles.rewardTitle}>{currentLevel.title}</h3>
+            </div>
+            <p className={styles.rewardStatus}>
+              {nextLevel
+                ? `${nextLevel.requiredHelps - profile.helped} more helps to ${nextLevel.title}`
+                : 'Top level unlocked'}
+            </p>
+          </div>
+
+          <div className={styles.rewardBarTrack}>
+            <div className={styles.rewardBarFill} style={{ width: `${stageProgress}%` }} />
+          </div>
+
+          <div className={styles.levelSignals}>
+            {REWARD_LEVELS.map((level, index) => {
+              const unlocked = profile.helped >= level.requiredHelps;
+              const isCurrent = index === currentLevelIndex;
+              const isNext = Boolean(nextLevel && nextLevel.id === level.id);
+              const showPopover = openRewardLevelId === level.id;
+
+              return (
+                <div key={level.id} className={styles.levelSignalWrap}>
+                  <button
+                    type="button"
+                    className={`${styles.levelSignal} ${unlocked ? styles.levelSignalUnlocked : ''} ${
+                      isCurrent ? styles.levelSignalCurrent : ''
+                    } ${isNext ? styles.levelSignalNext : ''}`}
+                    onMouseEnter={() => isNext && setOpenRewardLevelId(level.id)}
+                    onMouseLeave={() => isNext && setOpenRewardLevelId(null)}
+                    onFocus={() => isNext && setOpenRewardLevelId(level.id)}
+                    onBlur={() => isNext && setOpenRewardLevelId(null)}
+                    onClick={() =>
+                      isNext && setOpenRewardLevelId((prev) => (prev === level.id ? null : level.id))
+                    }
+                    aria-label={`${level.title}, unlocks at ${level.requiredHelps} helps`}
+                  >
+                    <span className={styles.levelSignalLabel}>{level.requiredHelps}</span>
+                  </button>
+                  <p className={styles.levelTitle}>{level.title}</p>
+
+                  {showPopover && isNext && (
+                    <div className={styles.rewardPopover} role="status">
+                      <p className={styles.rewardPopoverTitle}>Next unlock perks</p>
+                      {level.rewards.map((reward) => (
+                        <p key={reward} className={styles.rewardPopoverItem}>
+                          {reward}
+                        </p>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </section>
 
