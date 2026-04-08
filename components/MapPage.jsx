@@ -1,12 +1,10 @@
 'use client';
 
-import WebNav from './WebNav';
 import styles from './MapPage.module.css';
 
 export default function MapPage() {
   return (
     <div className={styles.page}>
-      <WebNav activePath="/map" />
       <div className={styles.header}>
         <h1 className={styles.title}>Map</h1>
         <p className={styles.subtitle}>Find help nearby</p>

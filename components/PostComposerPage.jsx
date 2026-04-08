@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import WebNav from './WebNav';
 import styles from './PostComposerPage.module.css';
 
 const CATEGORY_OPTIONS = [
@@ -56,7 +55,6 @@ export default function PostComposerPage() {
   return (
     <main className={styles.page}>
       <div className={styles.shell}>
-        <WebNav activePath="/post" />
         <header className={styles.header}>
           <h1 className={styles.title}>Create a post</h1>
           <p className={styles.subtitle}>Share what you need, when you need it, and where.</p>

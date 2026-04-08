@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import WebNav from '@/components/WebNav';
 import { commitments, people } from '@/data/mockCommunity';
 import styles from './ProfilePage.module.css';
 
@@ -238,7 +237,6 @@ const ProfilePage = () => {
   return (
     <main className={styles.page}>
       <div className={styles.shell}>
-        <WebNav activePath="/profile" />
         <header className={styles.header}>
           <h1>Your Profile</h1>
         </header>

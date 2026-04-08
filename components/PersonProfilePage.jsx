@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { people } from '@/data/mockCommunity';
-import WebNav from './WebNav';
 import styles from './PersonProfilePage.module.css';
 
 export default function PersonProfilePage({ slug }) {
@@ -22,7 +21,6 @@ export default function PersonProfilePage({ slug }) {
   return (
     <main className={styles.page}>
       <div className={styles.shell}>
-        <WebNav activePath="/profile" />
         <section className={styles.card}>
           <div className={styles.hero}>
             <div className={styles.avatar} style={{ backgroundColor: person.avatarBg }}>

@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import WebNav from './WebNav';
 import { commitments, people } from '@/data/mockCommunity';
 import styles from './CommitmentsPage.module.css';
 
@@ -10,7 +9,6 @@ export default function CommitmentsPage() {
   return (
     <main className={styles.page}>
       <div className={styles.shell}>
-        <WebNav activePath="/commitments" />
         <header className={styles.header}>
           <h1 className={styles.title}>Your commitments</h1>
           <p className={styles.subtitle}>Track what you promised and what you completed.</p>

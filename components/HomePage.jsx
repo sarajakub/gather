@@ -1,3 +1,5 @@
+"use client";
+
 /*
   DESIGN SYSTEM TOKENS USED IN THIS FILE:
   
@@ -50,7 +52,6 @@ import Link from 'next/link';
 import PostCard from './PostCard';
 import BottomSheet from './BottomSheet';
 import { currentUser, posts } from '@/data/mockCommunity';
-import WebNav from './WebNav';
 import styles from './HomePage.module.css';
 
 const HomePage = () => {
@@ -94,8 +95,6 @@ const HomePage = () => {
   return (
     <main className={styles.page}>
       <div className={styles.shell}>
-        <WebNav activePath="/home" />
-
         <div className={styles.contentGrid}>
           <section className={styles.mainColumn}>
             <section className={styles.welcomeSection}>

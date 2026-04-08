@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { currentUser, people, messages } from '@/data/mockCommunity';
-import WebNav from './WebNav';
 import styles from './MessagesPage.module.css';
 
 export default function MessagesPage({ searchParams = {} }) {
@@ -216,7 +215,6 @@ export default function MessagesPage({ searchParams = {} }) {
 
   return (
     <div className={styles.page}>
-      <WebNav activePath="/messages" showUnreadDot={false} />
       <header className={styles.header}>
         <h1 className={styles.title}>Messages</h1>
         <p className={styles.subtitle}>Inbox and sent messages for your neighborhood help requests.</p>
