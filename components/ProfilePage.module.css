@@ -576,6 +576,48 @@
   gap: var(--space-2);
 }
 
+.postedNeedsList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.postedNeedItem {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  background: var(--color-sage-50);
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.postedNeedTitle {
+  margin: 0;
+  color: var(--color-forest);
+  font-size: var(--text-body-sm);
+  font-weight: 600;
+}
+
+.postedNeedMeta {
+  margin: 4px 0 0;
+  color: var(--color-stone);
+  font-size: var(--text-caption);
+}
+
+.postedNeedChip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--color-white);
+  border: 1px solid var(--color-sage-100);
+  color: var(--color-sage-700);
+  font-size: var(--text-caption);
+  white-space: nowrap;
+}
+
 .subSection {
   display: flex;
   flex-direction: column;

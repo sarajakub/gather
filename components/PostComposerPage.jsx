@@ -2,31 +2,54 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { REQUEST_CATEGORIES } from '@/data/helpRequests';
+import { currentUser } from '@/data/mockCommunity';
+import { addLocalRequest } from '@/lib/localRequests';
 import styles from './PostComposerPage.module.css';
 
-const CATEGORY_OPTIONS = [
-  'Childcare',
-  'Elder support',
-  'Food + groceries',
-  'Moving + lifting',
-  'Tutoring',
-  'Tech help',
-  'Transportation',
-  'Pet care',
-  'Home tasks',
-];
+const CATEGORY_OPTIONS = [...REQUEST_CATEGORIES];
+const URGENCY_OPTIONS = ['Open', 'New', 'Urgent'];
 
-const URGENCY_OPTIONS = ['Low', 'Medium', 'High', 'Urgent'];
+function formatTimingLabel(dateValue, timeValue) {
+  if (!dateValue) {
+    return 'This week';
+  }
+
+  const parsed = new Date(`${dateValue}T${timeValue || '12:00'}`);
+
+  if (Number.isNaN(parsed.getTime())) {
+    return 'This week';
+  }
+
+  const dayLabel = parsed.toLocaleDateString(undefined, {
+    weekday: 'long',
+    month: 'short',
+    day: 'numeric',
+  });
+
+  if (!timeValue) {
+    return dayLabel;
+  }
+
+  const timeLabel = parsed.toLocaleTimeString(undefined, {
+    hour: 'numeric',
+    minute: '2-digit',
+  });
+
+  return `${dayLabel} at ${timeLabel}`;
+}
 
 export default function PostComposerPage() {
+  const router = useRouter();
   const [form, setForm] = useState({
     title: '',
     category: CATEGORY_OPTIONS[0],
-    neighborhood: 'Inwood',
+    neighborhood: currentUser.neighborhood,
     date: '',
     time: '',
     duration: '',
-    urgency: 'Medium',
+    urgency: 'Open',
     description: '',
     contactPreference: 'In-app messages',
   });
@@ -41,7 +64,6 @@ export default function PostComposerPage() {
     form.title.trim().length > 4 &&
     form.description.trim().length > 20 &&
     form.date &&
-    form.time &&
     form.duration.trim().length > 0;
 
   const handleSubmit = (event) => {
@@ -49,14 +71,29 @@ export default function PostComposerPage() {
     if (!isValid) {
       return;
     }
+
+    addLocalRequest({
+      title: form.title.trim(),
+      category: form.category,
+      neighborhood: form.neighborhood.trim(),
+      urgency: form.urgency,
+      description: form.description.trim(),
+      timing: formatTimingLabel(form.date, form.time),
+      helperNote: `Posted by ${currentUser.name}.`,
+      authorName: currentUser.name,
+    });
+
     setSubmitted(true);
+    window.setTimeout(() => {
+      router.push('/home');
+    }, 700);
   };
 
   return (
     <main className={styles.page}>
       <div className={styles.shell}>
         <header className={styles.header}>
-          <h1 className={styles.title}>Post a need</h1>
+          <h1 className={styles.title}>Ask for help</h1>
           <p className={styles.subtitle}>Share what you need, when you need it, and your neighborhood.</p>
         </header>
 
@@ -174,13 +211,13 @@ export default function PostComposerPage() {
               Maybe later
             </Link>
             <button type="submit" className={styles.submitBtn} disabled={!isValid}>
-              Post a need
+              Ask for help
             </button>
           </div>
 
           {submitted && (
             <div className={styles.successBanner}>
-              Your post is live. Neighbors can respond in messages.
+              Your request is live. You&apos;ll see it in Home and on your profile.
             </div>
           )}
         </form>

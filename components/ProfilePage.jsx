@@ -5,6 +5,7 @@ import Link from 'next/link';
 import React, { useState } from 'react';
 import { commitments, currentUser, people } from '@/data/mockCommunity';
 import { clearLocalProfile, loadLocalProfile } from '@/lib/localProfile';
+import { loadLocalRequests } from '@/lib/localRequests';
 import styles from './ProfilePage.module.css';
 
 const SKILL_OPTIONS = [
@@ -184,6 +185,7 @@ const ProfilePage = () => {
   const [openRewardLevelId, setOpenRewardLevelId] = useState(null);
   const [showPerkWallet, setShowPerkWallet] = useState(false);
   const [showRedeemPass, setShowRedeemPass] = useState(false);
+  const [postedNeeds] = useState(() => loadLocalRequests());
 
   const byMostRecent = (items) =>
     [...items].sort(
@@ -212,6 +214,8 @@ const ProfilePage = () => {
     }
     return acc;
   }, []);
+
+  const myPostedNeeds = postedNeeds.filter((item) => item.authorName === profile.name);
 
   const currentLevelIndex = REWARD_LEVELS.reduce(
     (bestIndex, level, index) =>
@@ -540,6 +544,30 @@ const ProfilePage = () => {
             </div>
           </section>
         ) : null}
+
+        <section className={styles.section}>
+          <div className={styles.sectionHeader}>
+            <h3>Requests you posted</h3>
+          </div>
+
+          {myPostedNeeds.length > 0 ? (
+            <div className={styles.postedNeedsList}>
+              {myPostedNeeds.map((item) => (
+                <article key={item.id} className={styles.postedNeedItem}>
+                  <div>
+                    <p className={styles.postedNeedTitle}>{item.title}</p>
+                    <p className={styles.postedNeedMeta}>
+                      {item.neighborhood} • {item.timing}
+                    </p>
+                  </div>
+                  <span className={styles.postedNeedChip}>{item.category}</span>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <p className={styles.emptyCommitments}>You haven&apos;t posted a request yet.</p>
+          )}
+        </section>
 
         {profile.tenure || profile.extraContext || profile.matchingOptIn || profile.notificationsOptIn ? (
           <section className={styles.section}>

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import BottomNav from "@/components/BottomNav";
 import {
   BOROUGH_FILTERS,
@@ -13,6 +13,7 @@ import {
   type HelpRequest,
   type UrgencyFilter,
 } from "@/data/helpRequests";
+import { loadLocalRequests } from "@/lib/localRequests";
 
 const INITIAL_VISIBLE_REQUESTS = 15;
 const SORT_OPTIONS = ["Recommended", "Distance"] as const;
@@ -89,14 +90,24 @@ export default function HomePage() {
   const [urgencyFilter, setUrgencyFilter] = useState<UrgencyFilter>("All");
   const [sortOption, setSortOption] = useState<SortOption>("Recommended");
   const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_REQUESTS);
+  const [localRequests, setLocalRequests] = useState<HelpRequest[]>([]);
+
+  useEffect(() => {
+    setLocalRequests(loadLocalRequests());
+  }, []);
+
+  const allRequests = useMemo(
+    () => [...localRequests, ...helpRequests],
+    [localRequests],
+  );
 
   const neighborhoodCount = useMemo(
-    () => new Set(helpRequests.map((request) => request.neighborhood)).size,
-    [],
+    () => new Set(allRequests.map((request) => request.neighborhood)).size,
+    [allRequests],
   );
 
   const filteredRequests = useMemo(() => {
-    return [...helpRequests]
+    return [...allRequests]
       .filter((request) => {
         if (boroughFilter !== "All" && request.boroughArea !== boroughFilter) {
           return false;
@@ -131,7 +142,7 @@ export default function HomePage() {
 
         return getDistanceValue(left.distance) - getDistanceValue(right.distance);
       });
-  }, [boroughFilter, categoryFilter, urgencyFilter, sortOption]);
+  }, [allRequests, boroughFilter, categoryFilter, urgencyFilter, sortOption]);
 
   const visibleRequests = filteredRequests.slice(0, visibleCount);
   const canShowMore = visibleCount < filteredRequests.length;
@@ -175,7 +186,7 @@ export default function HomePage() {
                     Real requests from nearby neighbors and across NYC.
                   </p>
                 </div>
-                <span className="badge badge-skill">{helpRequests.length} requests</span>
+                <span className="badge badge-skill">{allRequests.length} requests</span>
               </div>
 
               <div className="filter-toolbar">
@@ -266,11 +277,11 @@ export default function HomePage() {
                 <div className="request-empty-state">
                   <p className="section-title">Nothing nearby right now.</p>
                   <p className="muted-copy">
-                    Try opening up your filters, check back soon, or post a need.
+                    Try opening up your filters, check back soon, or ask for help.
                   </p>
                   <div className="show-more-row">
                     <Link href="/post" className="btn btn-primary btn-md">
-                      Post a need
+                      Ask for help
                     </Link>
                   </div>
                 </div>
@@ -339,7 +350,7 @@ export default function HomePage() {
               <p className="eyebrow">This week in Gather</p>
               <div className="stats-grid">
                 <div className="card-stat">
-                  <div className="card-stat-number">{helpRequests.length}</div>
+                  <div className="card-stat-number">{allRequests.length}</div>
                   <div className="card-stat-label">Open requests</div>
                 </div>
                 <div className="card-stat">
