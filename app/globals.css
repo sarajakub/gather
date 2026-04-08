@@ -554,9 +554,9 @@ select {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
-  padding: 6px;
+  width: 56px;
+  height: 56px;
+  padding: 4px;
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.72);
   box-shadow: var(--shadow-sm);
@@ -566,7 +566,8 @@ select {
 .brand-logo-image {
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: contain;
 }
 
 .brand-wordmark,

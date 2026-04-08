@@ -22,8 +22,8 @@ export const metadata: Metadata = {
   description:
     "Gather connects neighbors with local opportunities to give and receive help.",
   icons: {
-    icon: "/icon.svg",
-    shortcut: "/icon.svg",
+    icon: "/icon.png",
+    shortcut: "/icon.png",
   },
 };
 

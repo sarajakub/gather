@@ -13,11 +13,11 @@ export default function GatherLogo({
 
   return (
     <Image
-      src="/gather-logo-mark.svg"
+      src="/gather-logo-mark.png"
       alt=""
       aria-hidden="true"
-      width={128}
-      height={128}
+      width={79}
+      height={79}
       priority={priority}
       className={imageClassName}
     />
