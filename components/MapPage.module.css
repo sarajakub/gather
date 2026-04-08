@@ -3,7 +3,7 @@
   flex-direction: column;
   width: 100%;
   min-height: 100vh;
-  background-color: var(--color-canvas);
+  background: transparent;
   padding: var(--space-6);
   font-family: var(--font-ui);
 }
