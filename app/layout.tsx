@@ -21,6 +21,10 @@ export const metadata: Metadata = {
   title: "Gather",
   description:
     "Gather connects neighbors with local opportunities to give and receive help.",
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+  },
 };
 
 export default function RootLayout({

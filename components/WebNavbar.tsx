@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import GatherLogo from "@/components/GatherLogo";
 
 const navItems = [
   { label: "Home", href: "/home" },
@@ -22,9 +23,7 @@ export default function WebNavbar() {
       <div className="web-navbar-inner">
         <Link href="/home" className="web-navbar-brand" aria-label="Go to Gather home">
           <div className="brand-mark" aria-hidden="true">
-            <span className="brand-mark-dot brand-mark-dot-sage" />
-            <span className="brand-mark-dot brand-mark-dot-peach" />
-            <span className="brand-mark-dot brand-mark-dot-amber" />
+            <GatherLogo priority />
           </div>
           <div>
             <p className="eyebrow">Community mutual aid</p>
