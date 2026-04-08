@@ -917,8 +917,9 @@ select {
 }
 
 .badge-need {
-  background: var(--color-peach-100);
-  color: var(--color-peach-700);
+  background: var(--color-peach-50);
+  color: #8f644e;
+  border: 1px solid rgba(184, 72, 40, 0.08);
 }
 
 .badge-skill {

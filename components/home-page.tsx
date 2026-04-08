@@ -36,6 +36,22 @@ function getUrgencyBadgeClass(urgency: HelpRequest["urgency"]) {
   return "badge-open";
 }
 
+function getCategoryLabel(category: HelpRequest["category"]) {
+  const categoryEmojiMap: Record<HelpRequest["category"], string> = {
+    "Food support": "🍲",
+    "Outdoor help": "🌿",
+    "Moving help": "📦",
+    Errands: "🛍️",
+    "Home help": "🪜",
+    "Community volunteering": "🤝",
+    "Family support": "🏡",
+    "Tech help": "💻",
+    "Care visits": "💛",
+  };
+
+  return `${categoryEmojiMap[category]} ${category}`;
+}
+
 function getInitials(name: string | null | undefined) {
   if (!name) return "G";
   return name
@@ -291,7 +307,9 @@ export default function HomePage() {
                       </div>
 
                       <div className="card-post-badges">
-                        <span className="badge badge-need">{request.category}</span>
+                        <span className="badge badge-need">
+                          {getCategoryLabel(request.category)}
+                        </span>
                         <span className="badge badge-time">{request.timing}</span>
                         <span className={`badge ${getUrgencyBadgeClass(request.urgency)}`}>
                           {request.urgency}
