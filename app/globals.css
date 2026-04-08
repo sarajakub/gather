@@ -172,7 +172,7 @@ select {
 
 .app-home-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+  grid-template-columns: minmax(0, 1.5fr) minmax(260px, 0.5fr);
   gap: var(--space-5);
   align-items: start;
 }
@@ -196,6 +196,11 @@ select {
 .section-header-tight {
   align-items: flex-start;
   margin-bottom: var(--space-4);
+}
+
+.request-section-copy {
+  max-width: 58ch;
+  margin-top: var(--space-2);
 }
 
 .section-heading-large {
@@ -238,6 +243,11 @@ select {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+}
+
+.request-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .app-post-card {
@@ -293,6 +303,87 @@ select {
 
 .quick-action-card-peach {
   background: linear-gradient(135deg, var(--color-peach-50), rgba(255, 255, 255, 0.96));
+}
+
+.filter-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.filter-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-stone);
+}
+
+.filter-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1px solid rgba(30, 48, 16, 0.14);
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--color-stone);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.filter-chip:hover {
+  background: var(--color-sage-50);
+  color: var(--color-sage-700);
+  border-color: rgba(61, 104, 40, 0.28);
+}
+
+.filter-chip-active {
+  background: var(--color-sage-100);
+  color: var(--color-sage-700);
+  border-color: rgba(61, 104, 40, 0.32);
+}
+
+.results-summary {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--color-stone);
+}
+
+.request-empty-state {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  background: var(--color-sage-50);
+}
+
+.show-more-row {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-5);
 }
 
 .text-link {
@@ -851,6 +942,11 @@ select {
   color: #384878;
 }
 
+.badge-borough {
+  background: var(--color-sage-50);
+  color: var(--color-sage-700);
+}
+
 .badge-urgent {
   background: var(--color-peach-100);
   color: var(--color-peach-800);
@@ -860,6 +956,11 @@ select {
 .badge-new {
   background: var(--color-stone-light);
   color: #4a5440;
+}
+
+.badge-open {
+  background: var(--color-sage-100);
+  color: var(--color-sage-700);
 }
 
 .btn {
@@ -975,6 +1076,10 @@ select {
     grid-template-columns: 1fr;
   }
 
+  .request-list {
+    grid-template-columns: 1fr;
+  }
+
   .app-home-side {
     position: static;
   }
@@ -1032,6 +1137,17 @@ select {
 
   .web-navbar-actions .btn {
     width: 100%;
+  }
+
+  .filter-chip-row {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .filter-chip-row::-webkit-scrollbar {
+    display: none;
   }
 
   .user-chip-name {
