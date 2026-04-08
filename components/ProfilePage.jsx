@@ -108,8 +108,8 @@ const REWARD_LEVELS = [
     rewards: ['Free Dunkin coffee'],
   },
   {
-    id: 'block-ally',
-    title: 'Block Ally',
+    id: 'block-angel',
+    title: 'Block Angel',
     requiredHelps: 12,
     rewards: ['MTA subway pass (1 day)'],
   },
@@ -179,9 +179,6 @@ const ProfilePage = () => {
     return storedProfile ? mapStoredProfileToViewModel(storedProfile) : DEFAULT_PROFILE;
   });
 
-  const [activeEditor, setActiveEditor] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [draftValues, setDraftValues] = useState([]);
   const [openRewardLevelId, setOpenRewardLevelId] = useState(null);
   const [showPerkWallet, setShowPerkWallet] = useState(false);
   const [showRedeemPass, setShowRedeemPass] = useState(false);
@@ -238,126 +235,92 @@ const ProfilePage = () => {
   const activeRewardLevel =
     REWARD_LEVELS.find((level) => level.id === openRewardLevelId) || nextLevel;
 
-  const openEditor = (field) => {
-    setActiveEditor(field);
-    setSearchQuery('');
-    setDraftValues(profile[field]);
-  };
-
-  const cancelEditor = () => {
-    setActiveEditor(null);
-    setSearchQuery('');
-    setDraftValues([]);
-  };
-
   const handleSignOut = () => {
     clearLocalProfile();
     setProfile(DEFAULT_PROFILE);
     window.location.href = '/';
   };
 
-  const saveEditor = () => {
-    if (!activeEditor) {
+  const handleAddProfileValue = (field, value) => {
+    if (!value) {
       return;
     }
 
+    setProfile((prev) => {
+      const existing = prev[field] || [];
+
+      if (existing.includes(value)) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        [field]: [...existing, value],
+      };
+    });
+  };
+
+  const handleRemoveProfileValue = (field, value) => {
     setProfile((prev) => ({
       ...prev,
-      [activeEditor]: draftValues,
+      [field]: (prev[field] || []).filter((entry) => entry !== value),
     }));
-    cancelEditor();
-  };
-
-  const toggleDraftValue = (value) => {
-    setDraftValues((prev) =>
-      prev.includes(value)
-        ? prev.filter((item) => item !== value)
-        : [...prev, value]
-    );
-  };
-
-  const getFilteredOptions = (field) => {
-    const options = EDITABLE_FIELDS[field].options;
-    const normalizedQuery = searchQuery.trim().toLowerCase();
-
-    if (!normalizedQuery) {
-      return options;
-    }
-
-    return options.filter((option) =>
-      option.toLowerCase().includes(normalizedQuery)
-    );
   };
 
   const renderEditableSection = (field, isTimeTag = false) => {
-    const isOpen = activeEditor === field;
     const values = profile[field];
-    const filteredOptions = getFilteredOptions(field);
+    const availableOptions = EDITABLE_FIELDS[field].options.filter(
+      (option) => !values.includes(option)
+    );
 
     return (
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
           <h3>{EDITABLE_FIELDS[field].label}</h3>
-          <button
-            type="button"
-            className={styles.editBtn}
-            onClick={() => (isOpen ? cancelEditor() : openEditor(field))}
+        </div>
+
+        <div className={styles.dropdownRow}>
+          <label className={styles.dropdownLabel} htmlFor={`${field}-dropdown`}>
+            Add from list
+          </label>
+          <select
+            id={`${field}-dropdown`}
+            className={styles.dropdownSelect}
+            defaultValue=""
+            onChange={(event) => {
+              const nextValue = event.target.value;
+              handleAddProfileValue(field, nextValue);
+              event.target.value = '';
+            }}
           >
-            {isOpen ? 'Close' : 'Edit'}
-          </button>
+            <option value="" disabled>
+              Choose an option
+            </option>
+            {availableOptions.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
         </div>
 
-        <div className={styles.tags}>
-          {values.map((value) => (
-            <span
-              key={value}
-              className={`${styles.tag} ${isTimeTag ? styles.tagTime : ''}`}
-            >
-              {value}
-            </span>
-          ))}
-        </div>
-
-        {isOpen && (
-          <div className={styles.editorPanel}>
-            <input
-              type="text"
-              className={styles.searchInput}
-              placeholder={`Search ${EDITABLE_FIELDS[field].label.toLowerCase()}`}
-              value={searchQuery}
-              onChange={(event) => setSearchQuery(event.target.value)}
-            />
-
-            <div className={styles.optionList}>
-              {filteredOptions.length > 0 ? (
-                filteredOptions.map((option) => {
-                  const selected = draftValues.includes(option);
-                  return (
-                    <button
-                      key={option}
-                      type="button"
-                      className={`${styles.optionItem} ${selected ? styles.optionItemSelected : ''}`}
-                      onClick={() => toggleDraftValue(option)}
-                    >
-                      <span>{option}</span>
-                      <span className={styles.optionState}>{selected ? 'Added' : 'Add'}</span>
-                    </button>
-                  );
-                })
-              ) : (
-                <p className={styles.noResults}>Nothing matches that search yet.</p>
-              )}
-            </div>
-
-            <div className={styles.editorActions}>
-              <button type="button" className={styles.cancelBtn} onClick={cancelEditor}>
-                Maybe later
+        {values.length > 0 ? (
+          <div className={styles.tags}>
+            {values.map((value) => (
+              <button
+                key={value}
+                type="button"
+                className={`${styles.tagButton} ${isTimeTag ? styles.tagButtonTime : ''}`}
+                onClick={() => handleRemoveProfileValue(field, value)}
+                aria-label={`Remove ${value}`}
+              >
+                <span>{value}</span>
+                <span className={styles.tagRemove}>x</span>
               </button>
-              <button type="button" className={styles.saveBtn} onClick={saveEditor}>
-                Save changes
-              </button>
-            </div>
+            ))}
           </div>
+        ) : (
+          <p className={styles.noResults}>No selections yet.</p>
         )}
       </section>
     );

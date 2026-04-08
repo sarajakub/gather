@@ -432,35 +432,22 @@
   margin: 0;
 }
 
-.editBtn {
-  background: transparent;
-  color: var(--color-sage-600);
-  border: none;
-  font-size: var(--text-body-sm);
-  font-weight: 500;
-  cursor: pointer;
-  padding: 0;
-  text-decoration: underline;
-  font-family: var(--font-ui);
-}
-
-.editBtn:hover {
-  color: var(--color-sage-700);
-}
-
-.editorPanel {
-  margin-top: var(--space-4);
-  border: 1px solid var(--color-sage-100);
-  border-radius: var(--radius-md);
-  background: var(--color-sage-50);
-  padding: var(--space-4);
+.dropdownRow {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
   gap: var(--space-3);
+  margin-bottom: var(--space-3);
 }
 
-.searchInput {
-  width: 100%;
+.dropdownLabel {
+  margin: 0;
+  color: var(--color-stone);
+  font-size: var(--text-body-sm);
+}
+
+.dropdownSelect {
+  min-width: 230px;
   border: 1px solid var(--color-sage-300);
   border-radius: var(--radius-pill);
   padding: 10px var(--space-4);
@@ -470,102 +457,15 @@
   font-family: var(--font-ui);
 }
 
-.searchInput:focus-visible {
+.dropdownSelect:focus-visible {
   outline: none;
   box-shadow: var(--shadow-focus-sage);
   border-color: var(--color-sage-500);
-}
-
-.optionList {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  max-height: 224px;
-  overflow-y: auto;
-  padding-right: var(--space-1);
-}
-
-.optionItem {
-  border: 1px solid var(--color-sage-100);
-  border-radius: var(--radius-md);
-  background: var(--color-white);
-  color: var(--color-forest);
-  font-family: var(--font-ui);
-  font-size: var(--text-body-sm);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--space-3);
-  text-align: left;
-  padding: 10px var(--space-3);
-  cursor: pointer;
-  transition: border-color var(--transition-base), background var(--transition-base);
-}
-
-.optionItem:hover {
-  border-color: var(--color-sage-300);
-}
-
-.optionItem:focus-visible {
-  outline: none;
-  box-shadow: var(--shadow-focus-sage);
-}
-
-.optionItemSelected {
-  border-color: var(--color-sage-500);
-  background: var(--color-sage-100);
-}
-
-.optionState {
-  font-size: var(--text-caption);
-  color: var(--color-sage-600);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  font-weight: 500;
-}
-
-.editorActions {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--space-2);
-}
-
-.cancelBtn,
-.saveBtn {
-  border-radius: var(--radius-pill);
-  border: 1px solid transparent;
-  padding: 8px var(--space-4);
-  font-family: var(--font-ui);
-  font-size: var(--text-body-sm);
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.cancelBtn {
-  background: transparent;
-  color: var(--color-sage-700);
-  border-color: var(--color-sage-300);
-}
-
-.saveBtn {
-  background: var(--color-action);
-  color: var(--color-white);
-}
-
-.saveBtn:hover {
-  background: var(--color-peach-600);
-}
-
-.cancelBtn:focus-visible,
-.saveBtn:focus-visible {
-  outline: none;
-  box-shadow: var(--shadow-focus-sage);
 }
 
 .noResults {
   margin: 0;
-  padding: var(--space-3);
-  text-align: center;
+  padding: 2px 0;
   color: var(--color-stone);
   font-size: var(--text-body-sm);
 }
@@ -748,6 +648,47 @@
   color: var(--color-peach-800);
 }
 
+.tagButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  background: var(--color-sage-100);
+  color: var(--color-sage-700);
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-label);
+  font-weight: 500;
+  font-family: var(--font-ui);
+  cursor: pointer;
+}
+
+.tagButton:hover {
+  border-color: var(--color-sage-300);
+}
+
+.tagButton:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus-sage);
+}
+
+.tagButtonTime {
+  background: var(--color-peach-100);
+  color: var(--color-peach-800);
+}
+
+.tagRemove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.1);
+  font-size: 11px;
+  line-height: 1;
+}
+
 .logoutBtn {
   width: 100%;
   background: transparent;
@@ -771,7 +712,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .editBtn,
+  .tagButton,
   .logoutBtn {
     transition: none;
   }
@@ -810,5 +751,15 @@
   .commitmentItem {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .dropdownRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dropdownSelect {
+    width: 100%;
+    min-width: 0;
   }
 }

@@ -2,9 +2,21 @@ import Link from 'next/link';
 import { people, posts } from '@/data/mockCommunity';
 import styles from './PersonProfilePage.module.css';
 
+const REWARD_LEVELS = [
+  { id: 'starter', title: 'Starter Circle', requiredHelps: 0 },
+  { id: 'neighbor-spark', title: 'Neighbor Spark', requiredHelps: 5 },
+  { id: 'block-angel', title: 'Block Angel', requiredHelps: 12 },
+  { id: 'community-anchor', title: 'Community Anchor', requiredHelps: 22 },
+  { id: 'gather-champion', title: 'Gather Champion', requiredHelps: 36 },
+];
+
 export default function PersonProfilePage({ slug }) {
   const person = people[slug] || null;
   const activePosts = posts.filter((post) => post.personSlug === slug);
+  const currentLevel = REWARD_LEVELS.reduce(
+    (best, level) => (person && person.helped >= level.requiredHelps ? level : best),
+    REWARD_LEVELS[0]
+  );
 
   if (!person) {
     return (
@@ -30,6 +42,7 @@ export default function PersonProfilePage({ slug }) {
             <div>
               <h1 className={styles.title}>{person.name}</h1>
               <p className={styles.meta}>{person.neighborhood}</p>
+              <p className={styles.impactLevel}>Impact level: {currentLevel.title}</p>
             </div>
           </div>
 
