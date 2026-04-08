@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { commitments, people, posts } from '@/data/mockCommunity';
+import { commitments, messages, people, posts } from '@/data/mockCommunity';
 import styles from './CommitmentsPage.module.css';
 
 export default function CommitmentsPage() {
@@ -10,6 +10,7 @@ export default function CommitmentsPage() {
   const [listTab, setListTab] = useState('upcoming');
   const [selectedId, setSelectedId] = useState(null);
   const [rescheduleRequests, setRescheduleRequests] = useState({});
+  const [rescheduleDraft, setRescheduleDraft] = useState({ date: '', time: '', note: '' });
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -43,7 +44,7 @@ export default function CommitmentsPage() {
   const completed = byMostRecent(withPost.filter((item) => item.status === 'completed'));
   const allCommitments = byMostRecent(withPost);
 
-  const currentDate = new Date('2026-04-08T12:00:00Z');
+  const currentDate = new Date();
 
   const startOfWeek = (date) => {
     const value = new Date(date);
@@ -87,15 +88,90 @@ export default function CommitmentsPage() {
       minute: '2-digit',
     });
 
+  const formatComposerDate = (rawDate) => {
+    if (!rawDate) {
+      return '';
+    }
+
+    const parsed = new Date(rawDate);
+    if (Number.isNaN(parsed.getTime())) {
+      return rawDate;
+    }
+
+    return parsed.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  };
+
+  const formatTimestamp = () => {
+    const timeLabel = new Date().toLocaleTimeString([], {
+      hour: 'numeric',
+      minute: '2-digit',
+    });
+    return `Today, ${timeLabel}`;
+  };
+
   const selectedCommitment =
     allCommitments.find((item) => item.id === selectedId) || allCommitments[0] || null;
 
-  const requestReschedule = (id) => {
-    setRescheduleRequests((prev) => ({ ...prev, [id]: true }));
+  const requestReschedule = (item) => {
+    const scheduled = new Date(item.scheduledAt);
+    const defaultDate = !Number.isNaN(scheduled.getTime()) ? scheduled.toISOString().slice(0, 10) : '';
+    const defaultTime = !Number.isNaN(scheduled.getTime()) ? scheduled.toISOString().slice(11, 16) : '';
+
+    setRescheduleRequests((prev) => ({ ...prev, [item.id]: true }));
+    setRescheduleDraft({
+      date: defaultDate,
+      time: defaultTime,
+      note: 'Could we move this to another time that works for both of us?',
+    });
+  };
+
+  const handleSendReschedule = (item) => {
+    const person = people[item.personSlug];
+    if (!person || !rescheduleDraft.date || !rescheduleDraft.time || !rescheduleDraft.note.trim()) {
+      return;
+    }
+
+    let existingMessages = messages;
+    try {
+      const stored = window.localStorage.getItem('gather-messages');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) {
+          existingMessages = parsed;
+        }
+      }
+    } catch {
+      existingMessages = messages;
+    }
+
+    const body = [
+      `Reschedule request for: ${item.title}.`,
+      `Current timing: ${item.when}.`,
+      `Proposed new timing: ${formatComposerDate(rescheduleDraft.date)} at ${rescheduleDraft.time}.`,
+      rescheduleDraft.note.trim(),
+    ].join(' ');
+
+    const nextMessages = [
+      ...existingMessages,
+      {
+        id: `m-${Date.now()}-reschedule`,
+        direction: 'sent',
+        unread: false,
+        createdAt: new Date().toISOString(),
+        personSlug: person.slug,
+        postId: item.postId || 0,
+        postTitle: item.title,
+        body,
+        timestamp: formatTimestamp(),
+      },
+    ];
+
+    window.localStorage.setItem('gather-messages', JSON.stringify(nextMessages));
+    window.location.href = `/messages?to=${person.slug}`;
   };
 
   const renderCommitmentCard = (item, options = {}) => {
-    const { showTime = false, showInlineProfile = true } = options;
+    const { showTime = false, showInlineProfile = true, compactMeta = false } = options;
     const person = people[item.personSlug];
     const active = selectedId === item.id;
 
@@ -111,7 +187,7 @@ export default function CommitmentsPage() {
           <div>
             <p className={styles.itemTitle}>{item.title}</p>
             <p className={styles.itemMeta}>
-              {item.when}
+              {compactMeta ? formatTime(item.scheduledAt) : item.when}
               {showTime ? ` • ${formatTime(item.scheduledAt)}` : ''}
             </p>
           </div>
@@ -137,10 +213,11 @@ export default function CommitmentsPage() {
       selectedCommitment.post?.bodyFull ||
       selectedCommitment.post?.body ||
       'No post details available.';
+    const isRescheduleOpen = Boolean(rescheduleRequests[selectedCommitment.id]);
 
     return (
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Selected commitment</h2>
+        <h2 className={styles.sectionTitle}>Commitment details</h2>
         <article className={styles.itemDetailsCard}>
           <p className={styles.detailsLabel}>Original posting</p>
           <p className={styles.detailsTitle}>{postTitle}</p>
@@ -155,14 +232,61 @@ export default function CommitmentsPage() {
             <button
               type="button"
               className={styles.rescheduleBtn}
-              onClick={() => requestReschedule(selectedCommitment.id)}
-              disabled={rescheduleRequests[selectedCommitment.id]}
+              onClick={() => requestReschedule(selectedCommitment)}
             >
-              {rescheduleRequests[selectedCommitment.id]
-                ? 'Reschedule requested'
-                : 'Request reschedule'}
+              Request reschedule
             </button>
           </div>
+
+          {isRescheduleOpen && (
+            <div className={styles.rescheduleComposer}>
+              <p className={styles.composerTitle}>Send request to {person.name}</p>
+              <div className={styles.composerGrid}>
+                <label className={styles.composerField}>
+                  <span>New date</span>
+                  <input
+                    type="date"
+                    value={rescheduleDraft.date}
+                    onChange={(event) =>
+                      setRescheduleDraft((prev) => ({ ...prev, date: event.target.value }))
+                    }
+                  />
+                </label>
+                <label className={styles.composerField}>
+                  <span>New time</span>
+                  <input
+                    type="time"
+                    value={rescheduleDraft.time}
+                    onChange={(event) =>
+                      setRescheduleDraft((prev) => ({ ...prev, time: event.target.value }))
+                    }
+                  />
+                </label>
+              </div>
+
+              <label className={styles.composerField}>
+                <span>Message</span>
+                <textarea
+                  rows={3}
+                  value={rescheduleDraft.note}
+                  onChange={(event) =>
+                    setRescheduleDraft((prev) => ({ ...prev, note: event.target.value }))
+                  }
+                />
+              </label>
+
+              <div className={styles.composerActions}>
+                <button
+                  type="button"
+                  className={styles.sendRescheduleBtn}
+                  onClick={() => handleSendReschedule(selectedCommitment)}
+                  disabled={!rescheduleDraft.date || !rescheduleDraft.time || !rescheduleDraft.note.trim()}
+                >
+                  Send reschedule message
+                </button>
+              </div>
+            </div>
+          )}
         </article>
       </section>
     );
@@ -216,7 +340,7 @@ export default function CommitmentsPage() {
               <div className={styles.calendarDayItems}>
                 {day.items.map((item) => (
                   <div key={item.id} className={styles.calendarItemWrap}>
-                    {renderCommitmentCard(item, { showTime: true, showInlineProfile: false })}
+                    {renderCommitmentCard(item, { showInlineProfile: false, compactMeta: true })}
                   </div>
                 ))}
               </div>
@@ -241,7 +365,7 @@ export default function CommitmentsPage() {
             <p className={styles.monthCellDay}>{cell.date.getUTCDate()}</p>
             {cell.items.map((item) => (
               <div key={item.id} className={styles.monthCellItemWrap}>
-                {renderCommitmentCard(item, { showTime: true, showInlineProfile: false })}
+                {renderCommitmentCard(item, { showInlineProfile: false, compactMeta: true })}
               </div>
             ))}
           </article>
@@ -255,7 +379,7 @@ export default function CommitmentsPage() {
       <div className={styles.shell}>
         <header className={styles.header}>
           <h1 className={styles.title}>Your commitments</h1>
-          <p className={styles.subtitle}>Track what you promised and what you completed.</p>
+          <p className={styles.subtitle}>Stay organized, update timing quickly, and keep neighbors in sync.</p>
         </header>
 
         <section className={styles.viewSwitcher}>

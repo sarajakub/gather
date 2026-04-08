@@ -56,10 +56,19 @@ export default function PersonProfilePage({ slug }) {
               <div className={styles.activePostsList}>
                 {activePosts.map((post) => (
                   <article key={post.id} className={styles.postItem}>
-                    <p className={styles.postTitle}>{post.title}</p>
-                    <p className={styles.postMeta}>
-                      {post.timeframe} • {post.distance}
-                    </p>
+                    <div className={styles.postTopRow}>
+                      <p className={styles.postTitle}>{post.title}</p>
+                      <Link
+                        href={`/messages?to=${person.slug}&postId=${post.id}&postTitle=${encodeURIComponent(post.title)}&mode=offer`}
+                        className={styles.offerBtn}
+                      >
+                        Offer help
+                      </Link>
+                    </div>
+                    <div className={styles.postMetaRow}>
+                      <span className={styles.metaChip}>{post.timeframe}</span>
+                      <span className={styles.metaChip}>{post.distance}</span>
+                    </div>
                     <p className={styles.postBody}>{post.body}</p>
                   </article>
                 ))}

@@ -8,11 +8,24 @@ import styles from './MessagesPage.module.css';
 export default function MessagesPage({ searchParams = {} }) {
   const toParam = searchParams.to;
   const titleParam = searchParams.postTitle;
+  const modeParam = searchParams.mode;
+  const dateParam = searchParams.date;
+  const timeParam = searchParams.time;
+  const noteParam = searchParams.note;
+  const activityParam = searchParams.activity;
+
   const toSlug = Array.isArray(toParam) ? toParam[0] : toParam || 'marcus';
-  const hasOfferContext = Boolean(toParam);
+  const mode = Array.isArray(modeParam) ? modeParam[0] : modeParam || '';
+  const hasPostId = Boolean(searchParams.postId);
+  const hasOfferContext = mode === 'reschedule' || mode === 'offer' || hasPostId;
+  const isRescheduleContext = mode === 'reschedule';
+  const presetDate = Array.isArray(dateParam) ? dateParam[0] : dateParam || '';
+  const presetTime = Array.isArray(timeParam) ? timeParam[0] : timeParam || '';
+  const presetNote = Array.isArray(noteParam) ? noteParam[0] : noteParam || '';
+  const activityTitle = Array.isArray(activityParam) ? activityParam[0] : activityParam || '';
   const postTitle = Array.isArray(titleParam)
     ? titleParam[0]
-    : titleParam || 'Community help request';
+    : titleParam || activityTitle || 'Community help request';
   const person = people[toSlug] || people.marcus;
 
   const [threadData, setThreadData] = useState(messages);
@@ -57,6 +70,24 @@ export default function MessagesPage({ searchParams = {} }) {
     () => draft.trim().length > 0 && (!hasOfferContext || (date && time)),
     [date, draft, hasOfferContext, time]
   );
+
+  useEffect(() => {
+    if (!hasOfferContext) {
+      return;
+    }
+
+    if (presetDate) {
+      setDate(presetDate);
+    }
+
+    if (presetTime) {
+      setTime(presetTime);
+    }
+
+    if (presetNote) {
+      setDraft(presetNote);
+    }
+  }, [hasOfferContext, presetDate, presetNote, presetTime]);
 
   useEffect(() => {
     try {
@@ -160,7 +191,11 @@ export default function MessagesPage({ searchParams = {} }) {
       return;
     }
 
-    const extraLine = hasOfferContext ? `I can help on ${date} at ${time}.` : '';
+    const extraLine = hasOfferContext
+      ? isRescheduleContext
+        ? `Reschedule request for ${postTitle}: ${date} at ${time}.`
+        : `I can help on ${date} at ${time}.`
+      : '';
     const composedBody = [extraLine, draft.trim()].filter(Boolean).join(' ');
 
     const timestamp = formatTimestamp();
@@ -307,11 +342,15 @@ export default function MessagesPage({ searchParams = {} }) {
 
           {hasOfferContext && (
             <>
-              <h2 className={styles.sectionTitle}>Send availability to {activePerson.name}</h2>
+              <h2 className={styles.sectionTitle}>
+                {isRescheduleContext
+                  ? `Request a new time with ${activePerson.name}`
+                  : `Send availability to ${activePerson.name}`}
+              </h2>
               <p className={styles.postTitle}>{postTitle}</p>
               <form className={styles.form} onSubmit={handleSendMessage}>
                 <label className={styles.label} htmlFor="offer-date">
-                  Date you can help
+                  {isRescheduleContext ? 'Proposed new date' : 'Date you can help'}
                 </label>
                 <input
                   id="offer-date"
@@ -322,7 +361,7 @@ export default function MessagesPage({ searchParams = {} }) {
                 />
 
                 <label className={styles.label} htmlFor="offer-time">
-                  Time you can help
+                  {isRescheduleContext ? 'Proposed new time' : 'Time you can help'}
                 </label>
                 <input
                   id="offer-time"
@@ -333,7 +372,7 @@ export default function MessagesPage({ searchParams = {} }) {
                 />
 
                 <label className={styles.label} htmlFor="offer-note">
-                  Message
+                  {isRescheduleContext ? 'Reason / note' : 'Message'}
                 </label>
                 <textarea
                   id="offer-note"
@@ -341,11 +380,15 @@ export default function MessagesPage({ searchParams = {} }) {
                   value={draft}
                   onChange={(event) => setDraft(event.target.value)}
                   rows={4}
-                  placeholder="Write your reply"
+                  placeholder={
+                    isRescheduleContext
+                      ? 'Share why you need to move the time'
+                      : 'Write your reply'
+                  }
                 />
 
                 <button type="submit" className={styles.sendBtn} disabled={!canSend}>
-                  Send message
+                  {isRescheduleContext ? 'Send reschedule request' : 'Send message'}
                 </button>
               </form>
             </>

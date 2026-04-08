@@ -122,6 +122,16 @@
   border-radius: var(--radius-md);
   padding: var(--space-3);
   background: var(--color-sage-50);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.postTopRow {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  align-items: flex-start;
 }
 
 .postTitle {
@@ -131,6 +141,33 @@
   font-weight: 600;
 }
 
+.offerBtn {
+  text-decoration: none;
+  border-radius: var(--radius-pill);
+  background: var(--color-action);
+  color: var(--color-white);
+  font-size: var(--text-caption);
+  font-weight: 600;
+  white-space: nowrap;
+  padding: 6px 10px;
+}
+
+.postMetaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.metaChip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--radius-pill);
+  background: var(--color-white);
+  color: var(--color-sage-700);
+  font-size: var(--text-caption);
+  padding: 4px 8px;
+}
+
 .postMeta {
   margin: 6px 0 0;
   color: var(--color-stone);
@@ -138,10 +175,14 @@
 }
 
 .postBody {
-  margin: 8px 0 0;
+  margin: 0;
   color: var(--color-stone);
   font-size: var(--text-body-sm);
   line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .emptyState {
@@ -187,5 +228,9 @@
 
   .card {
     padding: var(--space-4);
+  }
+
+  .postTopRow {
+    flex-direction: column;
   }
 }
