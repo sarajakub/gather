@@ -182,6 +182,8 @@ const ProfilePage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [draftValues, setDraftValues] = useState([]);
   const [openRewardLevelId, setOpenRewardLevelId] = useState(null);
+  const [showPerkWallet, setShowPerkWallet] = useState(false);
+  const [showRedeemPass, setShowRedeemPass] = useState(false);
 
   const byMostRecent = (items) =>
     [...items].sort(
@@ -225,6 +227,12 @@ const ProfilePage = () => {
   const stageProgress = nextLevel
     ? Math.min((helpsInCurrentStage / helpsNeededInStage) * 100, 100)
     : 100;
+  const unlockedRewards = REWARD_LEVELS.filter((level) => profile.helped >= level.requiredHelps)
+    .flatMap((level) => level.rewards)
+    .filter(Boolean);
+  const redeemPassCode = `GATHER-${String(profile.helped).padStart(2, '0')}-${currentLevelIndex + 1}`;
+  const activeRewardLevel =
+    REWARD_LEVELS.find((level) => level.id === openRewardLevelId) || nextLevel;
 
   const openEditor = (field) => {
     setActiveEditor(field);
@@ -407,6 +415,31 @@ const ProfilePage = () => {
             </p>
           </div>
 
+          <div className={styles.rewardActions}>
+            <button
+              type="button"
+              className={styles.perkCountBtn}
+              onClick={() => {
+                setShowPerkWallet((prev) => !prev);
+                setShowRedeemPass(false);
+                setOpenRewardLevelId(null);
+              }}
+            >
+              {unlockedRewards.length} perks unlocked
+            </button>
+            <button
+              type="button"
+              className={styles.redeemBtn}
+              onClick={() => {
+                setShowRedeemPass((prev) => !prev);
+                setShowPerkWallet(false);
+                setOpenRewardLevelId(null);
+              }}
+            >
+              Redeem perks
+            </button>
+          </div>
+
           <div className={styles.rewardBarTrack}>
             <div className={styles.rewardBarFill} style={{ width: `${stageProgress}%` }} />
           </div>
@@ -416,7 +449,6 @@ const ProfilePage = () => {
               const unlocked = profile.helped >= level.requiredHelps;
               const isCurrent = index === currentLevelIndex;
               const isNext = Boolean(nextLevel && nextLevel.id === level.id);
-              const showPopover = openRewardLevelId === level.id;
 
               return (
                 <div key={level.id} className={styles.levelSignalWrap}>
@@ -437,21 +469,57 @@ const ProfilePage = () => {
                     <span className={styles.levelSignalLabel}>{level.requiredHelps}</span>
                   </button>
                   <p className={styles.levelTitle}>{level.title}</p>
-
-                  {showPopover && isNext && (
-                    <div className={styles.rewardPopover} role="status">
-                      <p className={styles.rewardPopoverTitle}>Next unlock perks</p>
-                      {level.rewards.map((reward) => (
-                        <p key={reward} className={styles.rewardPopoverItem}>
-                          {reward}
-                        </p>
-                      ))}
-                    </div>
-                  )}
                 </div>
               );
             })}
           </div>
+
+          {activeRewardLevel && activeRewardLevel.id === nextLevel?.id && (
+            <div className={styles.rewardDetailPanel}>
+              <p className={styles.rewardPopoverTitle}>Next unlock: {activeRewardLevel.title}</p>
+              <div className={styles.rewardDetailChips}>
+                {activeRewardLevel.rewards.map((reward) => (
+                  <span key={reward} className={styles.rewardDetailChip}>
+                    {reward}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {showPerkWallet && (
+            <div className={styles.perkWallet}>
+              <div className={styles.perkWalletHeader}>
+                <p className={styles.perkWalletTitle}>Unlocked perks</p>
+                <span className={styles.perkWalletCount}>{unlockedRewards.length}</span>
+              </div>
+              <div className={styles.perkChips}>
+                {unlockedRewards.map((reward) => (
+                  <span key={reward} className={styles.perkChip}>
+                    {reward}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {showRedeemPass && (
+            <div className={styles.redeemPassCard}>
+              <div className={styles.redeemPassTop}>
+                <div>
+                  <p className={styles.perkWalletTitle}>Redeem in person</p>
+                  <p className={styles.redeemPassCopy}>
+                    Show this pass to a partner or neighbor in person to redeem a perk.
+                  </p>
+                </div>
+                <div className={styles.redeemCode}>{redeemPassCode}</div>
+              </div>
+              <div className={styles.redeemPassBody}>
+                <span className={styles.redeemTag}>Valid perks</span>
+                <span className={styles.redeemTag}>{unlockedRewards.slice(0, 2).join(' · ')}</span>
+              </div>
+            </div>
+          )}
         </section>
 
         {renderEditableSection('skills')}
