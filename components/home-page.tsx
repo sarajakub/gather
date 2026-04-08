@@ -73,8 +73,9 @@ export default function HomePage() {
 
   useEffect(() => {
     if (!auth) return;
+    const firebaseAuth = auth;
 
-    const unsubscribe = onAuthStateChanged(auth, (nextUser) => {
+    const unsubscribe = onAuthStateChanged(firebaseAuth, (nextUser) => {
       setUser(nextUser);
     });
 
@@ -90,13 +91,14 @@ export default function HomePage() {
       );
       return;
     }
+    const firebaseAuth = auth;
 
     setAuthError(null);
     startTransition(async () => {
       try {
         const provider = new GoogleAuthProvider();
         provider.setCustomParameters({ prompt: "select_account" });
-        await signInWithPopup(auth, provider);
+        await signInWithPopup(firebaseAuth, provider);
       } catch (error) {
         const message =
           error instanceof Error
@@ -109,11 +111,12 @@ export default function HomePage() {
 
   const handleSignOut = () => {
     if (!auth) return;
+    const firebaseAuth = auth;
 
     setAuthError(null);
     startTransition(async () => {
       try {
-        await signOut(auth);
+        await signOut(firebaseAuth);
       } catch (error) {
         const message =
           error instanceof Error ? error.message : "Sign out failed.";
