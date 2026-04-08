@@ -336,18 +336,18 @@ const ProfilePage = () => {
                       onClick={() => toggleDraftValue(option)}
                     >
                       <span>{option}</span>
-                      <span className={styles.optionState}>{selected ? 'Selected' : 'Add'}</span>
+                      <span className={styles.optionState}>{selected ? 'Added' : 'Add'}</span>
                     </button>
                   );
                 })
               ) : (
-                <p className={styles.noResults}>No matching options</p>
+                <p className={styles.noResults}>Nothing matches that search yet.</p>
               )}
             </div>
 
             <div className={styles.editorActions}>
               <button type="button" className={styles.cancelBtn} onClick={cancelEditor}>
-                Cancel
+                Maybe later
               </button>
               <button type="button" className={styles.saveBtn} onClick={saveEditor}>
                 Save changes
@@ -590,7 +590,7 @@ const ProfilePage = () => {
                 ))}
               </div>
             ) : (
-              <p className={styles.emptyCommitments}>No completed commitments yet.</p>
+              <p className={styles.emptyCommitments}>You haven&apos;t helped anyone yet, but you will.</p>
             )}
           </div>
 

@@ -385,7 +385,7 @@ export default function MessagesPage({ searchParams = {} }) {
     <div className={styles.page}>
       <header className={styles.header}>
         <h1 className={styles.title}>Messages</h1>
-        <p className={styles.subtitle}>Inbox and sent messages for your neighborhood help requests.</p>
+        <p className={styles.subtitle}>Talk with neighbors, confirm plans, and keep each other in the loop.</p>
       </header>
 
       <div className={styles.contentGrid}>
@@ -437,7 +437,11 @@ export default function MessagesPage({ searchParams = {} }) {
                 </button>
               );
             })}
-            {conversations.length === 0 && <p className={styles.noResults}>No messages match your search.</p>}
+            {conversations.length === 0 && (
+              <p className={styles.noResults}>
+                No messages yet. Once you offer to help someone or someone replies to your post, you&apos;ll see it here.
+              </p>
+            )}
           </div>
         </section>
 
@@ -450,7 +454,7 @@ export default function MessagesPage({ searchParams = {} }) {
                 </div>
                 <div>
                   <div className={styles.threadName}>{activePerson.name}</div>
-                  <div className={styles.threadSub}>Tap to view profile</div>
+                  <div className={styles.threadSub}>See their profile</div>
                 </div>
               </Link>
             ) : (
@@ -490,7 +494,7 @@ export default function MessagesPage({ searchParams = {} }) {
               </div>
             )}
             {threadMessages.length === 0 && (
-              <p className={styles.noResults}>No chat history for this conversation with the current filters.</p>
+              <p className={styles.noResults}>No notes in this thread yet.</p>
             )}
           </div>
 
@@ -534,7 +538,7 @@ export default function MessagesPage({ searchParams = {} }) {
                 </select>
 
                 <label className={styles.label} htmlFor="offer-note">
-                  {isRescheduleContext ? 'Reason / note' : 'Message'}
+                  {isRescheduleContext ? 'Reason / note' : 'Note'}
                 </label>
                 <textarea
                   id="offer-note"
@@ -545,12 +549,12 @@ export default function MessagesPage({ searchParams = {} }) {
                   placeholder={
                     isRescheduleContext
                       ? 'Share why you need to move the time'
-                      : 'Write your reply'
+                      : 'Write your note'
                   }
                 />
 
                 <button type="submit" className={styles.sendBtn} disabled={!canSend}>
-                  {isRescheduleContext ? 'Send reschedule request' : 'Send message'}
+                  Send a note
                 </button>
               </form>
             </>
@@ -566,10 +570,10 @@ export default function MessagesPage({ searchParams = {} }) {
                 className={styles.input}
                 value={draft}
                 onChange={(event) => setDraft(event.target.value)}
-                placeholder="Write your message"
+                placeholder="Write your note"
               />
               <button type="submit" className={styles.sendBtn} disabled={!canSend}>
-                Send message
+                Send a note
               </button>
             </form>
           )}

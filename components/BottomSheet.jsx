@@ -42,7 +42,7 @@ const BottomSheet = ({ isOpen, post, onClose, onConfirm }) => {
               </div>
             </Link>
             <Link className={styles.profileLink} href={`/people/${post.personSlug}`}>
-              View profile
+              See their profile
             </Link>
           </div>
 
@@ -78,14 +78,14 @@ const BottomSheet = ({ isOpen, post, onClose, onConfirm }) => {
               onClick={onConfirm}
               aria-label={`Confirm offer to help with: ${post.title}`}
             >
-              Continue to message
+              Yes, I&apos;ll help
             </button>
             <button
               className={styles.secondaryCta}
               onClick={onClose}
-              aria-label="Cancel"
+              aria-label="Maybe later"
             >
-              Cancel
+              Maybe later
             </button>
           </div>
         </div>

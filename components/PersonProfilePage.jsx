@@ -10,9 +10,9 @@ export default function PersonProfilePage({ slug }) {
     return (
       <main className={styles.page}>
         <div className={styles.shell}>
-          <h1 className={styles.title}>Neighbor not found</h1>
+          <h1 className={styles.title}>We can&apos;t find that neighbor.</h1>
           <Link href="/home" className={styles.backLink}>
-            Back to feed
+            See what&apos;s near you
           </Link>
         </div>
       </main>
@@ -74,7 +74,7 @@ export default function PersonProfilePage({ slug }) {
                 ))}
               </div>
             ) : (
-              <p className={styles.emptyState}>No active help requests right now.</p>
+              <p className={styles.emptyState}>Nothing posted right now. Check back soon.</p>
             )}
           </section>
 
@@ -83,7 +83,7 @@ export default function PersonProfilePage({ slug }) {
               Message {person.name}
             </Link>
             <Link href="/home" className={styles.secondaryBtn}>
-              Back to feed
+              See what&apos;s near you
             </Link>
           </div>
         </section>

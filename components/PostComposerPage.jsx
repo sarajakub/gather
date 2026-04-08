@@ -56,8 +56,8 @@ export default function PostComposerPage() {
     <main className={styles.page}>
       <div className={styles.shell}>
         <header className={styles.header}>
-          <h1 className={styles.title}>Create a post</h1>
-          <p className={styles.subtitle}>Share what you need, when you need it, and where.</p>
+          <h1 className={styles.title}>Post a need</h1>
+          <p className={styles.subtitle}>Share what you need, when you need it, and your neighborhood.</p>
         </header>
 
         <form className={styles.formCard} onSubmit={handleSubmit}>
@@ -171,16 +171,16 @@ export default function PostComposerPage() {
 
           <div className={styles.actions}>
             <Link href="/home" className={styles.cancelBtn}>
-              Cancel
+              Maybe later
             </Link>
             <button type="submit" className={styles.submitBtn} disabled={!isValid}>
-              Publish post
+              Post a need
             </button>
           </div>
 
           {submitted && (
             <div className={styles.successBanner}>
-              Post published. Neighbors can now respond in your messages.
+              Your post is live. Neighbors can respond in messages.
             </div>
           )}
         </form>

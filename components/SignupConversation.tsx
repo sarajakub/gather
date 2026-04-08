@@ -65,7 +65,7 @@ const FIELD_ORDER: FieldConfig[] = [
     key: "profilePhoto",
     label: "Profile photo",
     prompt:
-      "First, please upload a clear photo of yourself. Gather requires a profile photo so neighbors can recognize each other and interactions feel more friendly.",
+      "Want to add a photo first? It helps neighbors recognize each other when you meet up.",
     required: true,
     type: "photo",
   },
@@ -73,9 +73,9 @@ const FIELD_ORDER: FieldConfig[] = [
     key: "subNeighborhood",
     label: "Sub-neighborhood",
     prompt:
-      "What part of the neighborhood are you in? You can share your sub-neighborhood or a nearby landmark if that feels easier. If the area seems unclear, Gather should confirm it before saving.",
+      "Great. What neighborhood are you in? You can share a nearby landmark too if that's easier.",
     clarificationPrompt:
-      "I need a real neighborhood, sub-neighborhood, cross street, or nearby landmark so I can place you correctly. Could you try that again?",
+      "I need a real neighborhood, cross street, or nearby landmark so I can place you correctly. Could you try that again?",
     placeholder: "For example: Northside, Maple & 3rd, near Riverside Park",
     required: true,
     type: "text",
@@ -84,9 +84,9 @@ const FIELD_ORDER: FieldConfig[] = [
     key: "needs",
     label: "Needs",
     prompt:
-      "What kinds of help might be useful for you right now? A short list is perfect, and if you do not need anything yet you can say 'none right now'.",
+      "What kinds of help might be useful for you right now? A short list is perfect. If you don't need anything yet, say 'none right now'.",
     clarificationPrompt:
-      "I need at least one actual kind of help, or you can say 'none right now' if you do not need support at the moment.",
+      "I need at least one real kind of help, or you can say 'none right now' if you don't need support at the moment.",
     placeholder: "Examples: borrowing tools, gardening advice",
     required: true,
     type: "list",
@@ -95,9 +95,9 @@ const FIELD_ORDER: FieldConfig[] = [
     key: "offers",
     label: "Offers",
     prompt:
-      "What could you offer neighbors? This can be a skill, craft, tool or item to share, produce from a tree or garden, or another resource.",
+      "What are you good at, or love doing? Could be anything: cooking, fixing things, speaking another language, giving rides, or sharing tools.",
     clarificationPrompt:
-      "I need at least one real offer, like a skill, advice, a tool to share, produce, or another resource you would feel comfortable offering.",
+      "I need at least one real offer, like a skill, advice, a tool to share, produce, or another resource you'd feel good offering.",
     placeholder: "Examples: sewing help, ladder to borrow, oranges from my tree, tutoring",
     required: true,
     type: "list",
@@ -106,7 +106,7 @@ const FIELD_ORDER: FieldConfig[] = [
     key: "matchingOptIn",
     label: "Matching opt-in",
     prompt:
-      "Would you like Gather to match you with nearby requests that fit your profile?",
+      "Want Gather to match you with nearby requests that fit your profile?",
     required: true,
     type: "opt-in",
   },
@@ -114,7 +114,7 @@ const FIELD_ORDER: FieldConfig[] = [
     key: "notificationsOptIn",
     label: "Notifications opt-in",
     prompt:
-      "Would you like to get notifications when there is a relevant request or opportunity to help nearby?",
+      "Want a heads-up when there's a nearby request that fits you?",
     required: true,
     type: "opt-in",
   },
@@ -122,7 +122,7 @@ const FIELD_ORDER: FieldConfig[] = [
     key: "extraContext",
     label: "Extra context",
     prompt:
-      "Optional: anything else you want neighbors to know about how you like to give or receive support?",
+      "Optional: anything else neighbors should know about how you like to give or receive support?",
     clarificationPrompt:
       "You can share a brief note about preferences, availability, or communication style, or skip this question.",
     placeholder: "Anything that helps make matching more useful",
@@ -149,7 +149,7 @@ const INITIAL_MESSAGES: ChatMessage[] = [
     id: "intro",
     role: "assistant",
     content:
-      "Welcome to Gather. I will help you set up a short profile so neighbors can recognize you. We will keep this brief, and you can skip any optional question.",
+      "Hey! I'll help you get set up. We'll keep this brief, and you can skip any optional question.",
   },
   {
     id: "profilePhoto-prompt",
@@ -533,6 +533,7 @@ function buildProfileDocument(draft: SignupDraft) {
       matchingOptIn: draft.matchingOptIn,
       notificationsOptIn: draft.notificationsOptIn,
     },
+    tenure: null,
     extraContext: draft.extraContext || null,
     skippedFields: draft.skippedFields,
   };
@@ -666,7 +667,7 @@ export default function SignupConversation() {
           id: `assistant-${crypto.randomUUID()}`,
           role: "assistant",
           content:
-            "That covers everything for now. Your signup summary is ready to review below.",
+            "That covers everything for now. Your profile summary is ready to review below.",
         },
       ]);
       return;
@@ -709,9 +710,9 @@ export default function SignupConversation() {
         profilePhotoPreview: previewUrl,
         skippedFields: draft.skippedFields.filter((field) => field !== "profilePhoto"),
       };
-      queueNextPrompt(nextDraft, "Perfect. Your photo is set.");
+      queueNextPrompt(nextDraft, "Perfect. Photo saved.");
     } catch {
-      appendAssistantMessage("I couldn't read that image. Please try choosing another photo.");
+      appendAssistantMessage("That image didn't upload. Try another file, or skip it for now.");
     } finally {
       event.target.value = "";
     }
@@ -759,7 +760,7 @@ export default function SignupConversation() {
         normalized.startsWith("y") ? "yes" : normalized.startsWith("n") ? "no" : null;
 
       if (!choice) {
-        appendAssistantMessage("Please answer with yes or no for this one.");
+        appendAssistantMessage("Please answer yes or no for this one.");
         return;
       }
 
@@ -769,7 +770,7 @@ export default function SignupConversation() {
         skippedFields: draft.skippedFields.filter((field) => field !== nextField.key),
       };
       setDraft(nextDraft);
-      queueNextPrompt(nextDraft, "Thanks. I have that saved.");
+      queueNextPrompt(nextDraft, "Thanks. Saved.");
       return;
     }
 
@@ -805,7 +806,7 @@ export default function SignupConversation() {
         break;
     }
 
-    queueNextPrompt(nextDraft, "Thanks. I have that saved.");
+    queueNextPrompt(nextDraft, "Thanks. Saved.");
   }
 
   function handleSkip() {
@@ -830,7 +831,7 @@ export default function SignupConversation() {
       skippedFields: draft.skippedFields.filter((field) => field !== nextField.key),
     };
     setDraft(nextDraft);
-    queueNextPrompt(nextDraft, "Thanks. I have that saved.");
+    queueNextPrompt(nextDraft, "Thanks. Saved.");
   }
 
   function handleFinish() {
@@ -838,7 +839,7 @@ export default function SignupConversation() {
 
     saveLocalProfile(profileDocument);
     setIsComplete(true);
-    appendAssistantMessage("Your core signup profile is complete.");
+    appendAssistantMessage("You're in. Here's what's near you.");
   }
 
   return (
@@ -850,7 +851,7 @@ export default function SignupConversation() {
               Gather signup
             </p>
             <h1 className="mt-2 text-3xl leading-tight">
-              A short conversation to set up your neighbor profile
+              A quick conversation to set up your neighbor profile
             </h1>
           </div>
 
@@ -876,16 +877,16 @@ export default function SignupConversation() {
           <div className="border-t border-[#eceee8] bg-white px-4 py-5 sm:px-6">
             {isComplete ? (
               <div className="rounded-[20px] border border-[#dfe7d6] bg-[#f8fbf5] p-4">
-                <p className="text-sm font-medium text-[#3d6828]">Profile complete</p>
+                <p className="text-sm font-medium text-[#3d6828]">You&apos;re in</p>
                 <p className="mt-2 text-sm leading-6 text-[#5a6553]">
-                  Your signup is complete and your profile is ready to view.
+                  Your profile is ready, and nearby requests are waiting.
                 </p>
                 <div className="mt-4">
                   <Link
-                    href="/profile"
+                    href="/home"
                     className="inline-flex rounded-full border border-[#c7d0bf] bg-white px-5 py-3 text-sm font-medium text-[#1e3010] transition hover:border-[#3d6828]"
                   >
-                    View profile
+                    See what&apos;s near you
                   </Link>
                 </div>
               </div>
@@ -893,8 +894,7 @@ export default function SignupConversation() {
               <div className="rounded-[20px] border border-[#dfe7d6] bg-[#f8fbf5] p-4">
                 <p className="text-sm font-medium text-[#3d6828]">Conversation complete</p>
                 <p className="mt-2 text-sm leading-6 text-[#5a6553]">
-                  There are no more signup questions right now. Review the summary and use Finish
-                  signup to lock in the core profile.
+                  There are no more signup questions right now. Review your summary, then finish to lock in your profile.
                 </p>
                 <div className="mt-4 flex flex-wrap items-center gap-3">
                   <span className="rounded-full bg-[#f2f7ee] px-3 py-1 text-xs font-medium text-[#3d6828]">
@@ -906,7 +906,7 @@ export default function SignupConversation() {
                     disabled={!canFinish}
                     className="rounded-full border border-[#c7d0bf] bg-white px-5 py-3 text-sm font-medium text-[#1e3010] transition enabled:hover:border-[#3d6828] disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    Finish signup
+                    Get started
                   </button>
                 </div>
               </div>
@@ -918,7 +918,7 @@ export default function SignupConversation() {
                       <div>
                         <p className="text-sm font-medium text-[#1e3010]">Upload profile photo</p>
                         <p className="mt-1 text-sm text-[#5a6553]">
-                          This is required so neighbors can recognize each other.
+                          We need this so neighbors can recognize each other.
                         </p>
                       </div>
                       <label className="inline-flex cursor-pointer items-center justify-center rounded-full bg-[#3d6828] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#335723]">
@@ -1016,7 +1016,7 @@ export default function SignupConversation() {
 
                 <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-[#eceee8] pt-4">
                   <span className="rounded-full bg-[#f2f7ee] px-3 py-1 text-xs font-medium text-[#3d6828]">
-                    {canFinish ? "Core requirements complete" : "Collecting required profile data"}
+                    {canFinish ? "Core profile complete" : "Collecting core profile details"}
                   </span>
                   <button
                     type="button"
@@ -1024,7 +1024,7 @@ export default function SignupConversation() {
                     disabled={!canFinish}
                     className="rounded-full border border-[#c7d0bf] bg-white px-5 py-3 text-sm font-medium text-[#1e3010] transition enabled:hover:border-[#3d6828] disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    Finish signup
+                    Get started
                   </button>
                 </div>
               </>
@@ -1054,14 +1054,14 @@ export default function SignupConversation() {
                       <span>{draft.profilePhotoName}</span>
                     </div>
                   ) : (
-                    "Required"
+                    "We need this to match you with neighbors"
                   )}
                 </dd>
               </div>
               <div>
                 <dt className="text-[#7a8870]">Sub-neighborhood</dt>
                 <dd className="mt-1 text-[#1e3010]">
-                  {draft.location || "Required"}
+                  {draft.location || "We need this to find nearby posts"}
                   {draft.location ? (
                     <div className="mt-2 flex flex-wrap gap-2">
                       <span className="rounded-full border border-[#c7d0bf] bg-[#f8fbf5] px-3 py-1 text-xs font-medium text-[#3d6828]">
@@ -1088,7 +1088,7 @@ export default function SignupConversation() {
                       ))}
                     </div>
                   ) : (
-                    "Required"
+                    "We need this to match you with neighbors"
                   )}
                 </dd>
               </div>
@@ -1107,20 +1107,20 @@ export default function SignupConversation() {
                       ))}
                     </div>
                   ) : (
-                    "Required"
+                    "We need this to match you with neighbors"
                   )}
                 </dd>
               </div>
               <div>
                 <dt className="text-[#7a8870]">Matching</dt>
                 <dd className="mt-1 text-[#1e3010]">
-                  {draft.matchingOptIn ? draft.matchingOptIn : "Required"}
+                  {draft.matchingOptIn ? draft.matchingOptIn : "We need this to match you with neighbors"}
                 </dd>
               </div>
               <div>
                 <dt className="text-[#7a8870]">Notifications</dt>
                 <dd className="mt-1 text-[#1e3010]">
-                  {draft.notificationsOptIn ? draft.notificationsOptIn : "Required"}
+                  {draft.notificationsOptIn ? draft.notificationsOptIn : "We need this to match you with neighbors"}
                 </dd>
               </div>
             </dl>

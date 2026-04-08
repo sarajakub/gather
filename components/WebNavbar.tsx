@@ -21,7 +21,7 @@ export default function WebNavbar() {
   return (
     <header className="web-navbar">
       <div className="web-navbar-inner">
-        <Link href="/home" className="web-navbar-brand" aria-label="Go to Gather home">
+        <Link href="/" className="web-navbar-brand" aria-label="Go to Gather landing page">
           <div className="brand-mark" aria-hidden="true">
             <GatherLogo priority />
           </div>

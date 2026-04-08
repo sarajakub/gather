@@ -164,34 +164,15 @@ export default function HomePage() {
       <div className="app-frame app-frame-feed">
         <section className="app-home-grid">
           <div className="app-home-column">
-            <section className="surface-card app-hero-card">
-              <p className="eyebrow">Neighbors helping neighbors</p>
-              <h2 className="hero-title">
-                Gather around the help your community needs.
-              </h2>
-              <p className="hero-body">
-                Discover nearby requests, step in where you can, and make local
-                care feel easy to act on.
-              </p>
-              <div className="hero-actions">
-                <Link href="/signup" className="btn btn-primary btn-lg">
-                  Sign up
-                </Link>
-                <p className="soft-note">
-                  Create your neighbor profile to share what support you need or can offer.
-                </p>
-              </div>
-            </section>
-
             <section className="surface-card section-card">
               <div className="section-header section-header-tight">
                 <div>
-                  <p className="eyebrow">Requests that need help</p>
+                  <p className="eyebrow">Near you</p>
                   <h3 className="section-heading">
                     Lend a hand
                   </h3>
                   <p className="muted-copy request-section-copy">
-                    Requests within your neighborhood or all across NYC.
+                    Real requests from nearby neighbors and across NYC.
                   </p>
                 </div>
                 <span className="badge badge-skill">{helpRequests.length} requests</span>
@@ -283,11 +264,15 @@ export default function HomePage() {
 
               {filteredRequests.length === 0 ? (
                 <div className="request-empty-state">
-                  <p className="section-title">No requests match these filters.</p>
+                  <p className="section-title">Nothing nearby right now.</p>
                   <p className="muted-copy">
-                    Try opening the area or category filters back up to see more
-                    neighbors who need help.
+                    Try opening up your filters, check back soon, or post a need.
                   </p>
+                  <div className="show-more-row">
+                    <Link href="/post" className="btn btn-primary btn-md">
+                      Post a need
+                    </Link>
+                  </div>
                 </div>
               ) : (
                 <div className="request-list">

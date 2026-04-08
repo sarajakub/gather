@@ -222,7 +222,7 @@ export default function CommitmentsPage() {
           {showInlineProfile && (
             <div className={styles.summaryRight}>
               <span className={styles.personLink}>{person.name}</span>
-              <span className={styles.expandHint}>{active ? 'Selected' : 'Open details'}</span>
+              <span className={styles.expandHint}>{active ? 'Viewing details' : 'See details'}</span>
             </div>
           )}
         </button>
@@ -257,7 +257,7 @@ export default function CommitmentsPage() {
           </p>
           <div className={styles.detailsActions}>
             <Link className={styles.detailsLink} href={`/people/${person.slug}`}>
-              View {person.name}&apos;s profile
+              See their profile
             </Link>
             {!isCompleted && (
               <button
@@ -265,7 +265,7 @@ export default function CommitmentsPage() {
                 className={styles.completeBtn}
                 onClick={() => handleMarkComplete(selectedCommitment)}
               >
-                Complete commitment
+                Mark as done
               </button>
             )}
             {!isCompleted && (
@@ -281,7 +281,7 @@ export default function CommitmentsPage() {
 
           {isRescheduleOpen && (
             <div className={styles.rescheduleComposer}>
-              <p className={styles.composerTitle}>Send request to {person.name}</p>
+              <p className={styles.composerTitle}>Send a note to {person.name}</p>
               <div className={styles.composerGrid}>
                 <label className={styles.composerField}>
                   <span>New date</span>
@@ -323,7 +323,7 @@ export default function CommitmentsPage() {
                   onClick={() => handleSendReschedule(selectedCommitment)}
                   disabled={!rescheduleDraft.date || !rescheduleDraft.time || !rescheduleDraft.note.trim()}
                 >
-                  Send reschedule message
+                  Send a note
                 </button>
               </div>
             </div>
@@ -372,7 +372,7 @@ export default function CommitmentsPage() {
                       onClick={() => handleSubmitReview(selectedCommitment)}
                       disabled={!reviewDraft.rating}
                     >
-                      Save review
+                      Share how it went
                     </button>
                   </div>
                 </>
@@ -437,7 +437,7 @@ export default function CommitmentsPage() {
                 ))}
               </div>
             ) : (
-              <p className={styles.emptyText}>No commitments</p>
+              <p className={styles.emptyText}>Nothing planned that day.</p>
             )}
           </article>
         ))}
