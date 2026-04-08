@@ -45,7 +45,7 @@ export default function WebNavbar() {
 
         <div className="web-navbar-actions">
           <Link href="/post" className="btn btn-primary btn-md">
-            Ask for help
+            Share a need
           </Link>
         </div>
       </div>

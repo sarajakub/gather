@@ -277,11 +277,11 @@ export default function HomePage() {
                 <div className="request-empty-state">
                   <p className="section-title">Nothing nearby right now.</p>
                   <p className="muted-copy">
-                    Try opening up your filters, check back soon, or ask for help.
+                    Try opening up your filters, check back soon, or share a need.
                   </p>
                   <div className="show-more-row">
                     <Link href="/post" className="btn btn-primary btn-md">
-                      Ask for help
+                      Share a need
                     </Link>
                   </div>
                 </div>

@@ -39,8 +39,8 @@ const BottomNav = ({ activeTab, hasNotification }) => {
       <Link
         href="/post"
         className={styles.fab}
-        aria-label="Ask for help"
-        title="Ask for help"
+        aria-label="Share a need"
+        title="Share a need"
       >
         <PostIcon className={styles.fabIcon} />
       </Link>

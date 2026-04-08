@@ -93,7 +93,7 @@ export default function PostComposerPage() {
     <main className={styles.page}>
       <div className={styles.shell}>
         <header className={styles.header}>
-          <h1 className={styles.title}>Ask for help</h1>
+          <h1 className={styles.title}>Share a need</h1>
           <p className={styles.subtitle}>Share what you need, when you need it, and your neighborhood.</p>
         </header>
 
@@ -211,7 +211,7 @@ export default function PostComposerPage() {
               Maybe later
             </Link>
             <button type="submit" className={styles.submitBtn} disabled={!isValid}>
-              Ask for help
+              Share a need
             </button>
           </div>
 
