@@ -1,8 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
-import { commitments, people } from '@/data/mockCommunity';
+import React, { useState } from 'react';
+import { commitments, currentUser, people } from '@/data/mockCommunity';
+import { clearLocalProfile, loadLocalProfile } from '@/lib/localProfile';
 import styles from './ProfilePage.module.css';
 
 const SKILL_OPTIONS = [
@@ -124,18 +126,56 @@ const REWARD_LEVELS = [
   },
 ];
 
+const DEFAULT_PROFILE = {
+  name: currentUser.name,
+  neighborhood: currentUser.neighborhood,
+  initials: currentUser.initials,
+  avatar: { bg: currentUser.avatarBg, imageUrl: null },
+  helped: currentUser.helped,
+  rating: currentUser.rating,
+  travelTime: '20 min',
+  skills: currentUser.skills,
+  languages: ['English', 'French', 'Spanish'],
+  availability: ['Weekday evenings', 'Saturday mornings'],
+  needs: [],
+  tenure: null,
+  extraContext: null,
+  matchingOptIn: null,
+  notificationsOptIn: null,
+};
+
+function dedupeValues(values) {
+  return [...new Set(values.filter(Boolean))];
+}
+
+function mapStoredProfileToViewModel(storedProfile) {
+  const offerLabels = dedupeValues(
+    (storedProfile.offers ?? []).flatMap((offer) =>
+      (offer.tags ?? []).map((tag) => tag.label)
+    )
+  );
+  const needLabels = dedupeValues((storedProfile.needs ?? []).map((need) => need.label));
+
+  return {
+    ...DEFAULT_PROFILE,
+    neighborhood: storedProfile.location?.value || DEFAULT_PROFILE.neighborhood,
+    avatar: {
+      ...DEFAULT_PROFILE.avatar,
+      imageUrl: storedProfile.profilePhoto?.previewUrl || null,
+    },
+    skills: offerLabels.length > 0 ? offerLabels : DEFAULT_PROFILE.skills,
+    needs: needLabels,
+    tenure: storedProfile.tenure,
+    extraContext: storedProfile.extraContext,
+    matchingOptIn: storedProfile.preferences?.matchingOptIn ?? null,
+    notificationsOptIn: storedProfile.preferences?.notificationsOptIn ?? null,
+  };
+}
+
 const ProfilePage = () => {
-  const [profile, setProfile] = useState({
-    name: 'Diane',
-    neighborhood: 'Inwood',
-    initials: 'D',
-    avatar: { bg: 'var(--color-sage-100)' },
-    helped: 8,
-    rating: 4.9,
-    travelTime: '20 min',
-    skills: ['Translation', 'French', 'Cooking', 'Tech help', 'Errand running'],
-    languages: ['English', 'French', 'Spanish'],
-    availability: ['Weekday evenings', 'Saturday mornings'],
+  const [profile, setProfile] = useState(() => {
+    const storedProfile = loadLocalProfile();
+    return storedProfile ? mapStoredProfileToViewModel(storedProfile) : DEFAULT_PROFILE;
   });
 
   const [activeEditor, setActiveEditor] = useState(null);
@@ -196,6 +236,12 @@ const ProfilePage = () => {
     setActiveEditor(null);
     setSearchQuery('');
     setDraftValues([]);
+  };
+
+  const handleSignOut = () => {
+    clearLocalProfile();
+    setProfile(DEFAULT_PROFILE);
+    window.location.href = '/';
   };
 
   const saveEditor = () => {
@@ -313,9 +359,20 @@ const ProfilePage = () => {
         </header>
 
         <section className={styles.profileHero}>
-          <div className={styles.avatarLarge} style={{ backgroundColor: profile.avatar.bg }}>
-            {profile.initials}
-          </div>
+          {profile.avatar.imageUrl ? (
+            <Image
+              src={profile.avatar.imageUrl}
+              alt={`${profile.name} profile`}
+              width={88}
+              height={88}
+              unoptimized
+              className={styles.avatarImage}
+            />
+          ) : (
+            <div className={styles.avatarLarge} style={{ backgroundColor: profile.avatar.bg }}>
+              {profile.initials}
+            </div>
+          )}
           <div className={styles.profileTitle}>
             <h2>{profile.name}</h2>
             <p className={styles.neighborhood}>{profile.neighborhood}</p>
@@ -401,6 +458,51 @@ const ProfilePage = () => {
         {renderEditableSection('languages')}
         {renderEditableSection('availability', true)}
 
+        {profile.needs.length > 0 ? (
+          <section className={styles.section}>
+            <div className={styles.sectionHeader}>
+              <h3>Current needs</h3>
+            </div>
+            <div className={styles.tags}>
+              {profile.needs.map((value) => (
+                <span key={value} className={styles.tag}>
+                  {value}
+                </span>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        {profile.tenure || profile.extraContext || profile.matchingOptIn || profile.notificationsOptIn ? (
+          <section className={styles.section}>
+            <div className={styles.sectionHeader}>
+              <h3>Signup details</h3>
+            </div>
+            <div className={styles.detailList}>
+              {profile.tenure ? (
+                <p className={styles.detailRow}>
+                  <strong>Neighborhood tenure:</strong> {profile.tenure}
+                </p>
+              ) : null}
+              {profile.matchingOptIn ? (
+                <p className={styles.detailRow}>
+                  <strong>Matching:</strong> {profile.matchingOptIn}
+                </p>
+              ) : null}
+              {profile.notificationsOptIn ? (
+                <p className={styles.detailRow}>
+                  <strong>Notifications:</strong> {profile.notificationsOptIn}
+                </p>
+              ) : null}
+              {profile.extraContext ? (
+                <p className={styles.detailRow}>
+                  <strong>Extra context:</strong> {profile.extraContext}
+                </p>
+              ) : null}
+            </div>
+          </section>
+        ) : null}
+
         <section className={styles.section}>
           <div className={styles.sectionHeader}>
             <h3>Your commitments</h3>
@@ -453,7 +555,9 @@ const ProfilePage = () => {
         </section>
 
         <section className={styles.section}>
-          <button className={styles.logoutBtn}>Sign out</button>
+          <button type="button" className={styles.logoutBtn} onClick={handleSignOut}>
+            Sign out
+          </button>
         </section>
       </div>
     </main>

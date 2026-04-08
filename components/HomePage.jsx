@@ -47,18 +47,24 @@
   No hardcoded hex values appear anywhere in component styles — all colors use CSS custom properties.
 */
 
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import PostCard from './PostCard';
 import BottomSheet from './BottomSheet';
 import { currentUser, posts } from '@/data/mockCommunity';
+import { loadLocalProfile } from '@/lib/localProfile';
 import styles from './HomePage.module.css';
 
 const HomePage = () => {
   const [selectedPost, setSelectedPost] = useState(null);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const [showAllPosts, setShowAllPosts] = useState(false);
+  const [hasSignedUp, setHasSignedUp] = useState(false);
   const feedSectionRef = useRef(null);
+
+  useEffect(() => {
+    setHasSignedUp(Boolean(loadLocalProfile()));
+  }, []);
 
   const visiblePosts = showAllPosts ? posts : posts.slice(0, 3);
 
@@ -103,6 +109,16 @@ const HomePage = () => {
                 <p className={styles.subtitle}>
                   Here&apos;s what&apos;s happening in {currentUser.neighborhood} today.
                 </p>
+                {!hasSignedUp ? (
+                  <div className={styles.welcomeActions}>
+                    <Link className={styles.primarySignupBtn} href="/signup">
+                      Start signup
+                    </Link>
+                    <p className={styles.welcomeActionCopy}>
+                      New here? Set up your neighbor profile and share what support you need or can offer.
+                    </p>
+                  </div>
+                ) : null}
               </div>
             </section>
 
@@ -173,6 +189,11 @@ const HomePage = () => {
                 >
                   See who needs help
                 </button>
+                {!hasSignedUp ? (
+                  <Link className={styles.secondarySignupBtn} href="/signup">
+                    Go to signup
+                  </Link>
+                ) : null}
               </div>
             </section>
           </aside>

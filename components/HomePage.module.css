@@ -44,6 +44,50 @@
   gap: var(--space-2);
 }
 
+.welcomeActions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+.primarySignupBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 var(--space-6);
+  border-radius: var(--radius-pill);
+  background: var(--color-action);
+  color: var(--color-white);
+  font-size: var(--text-body);
+  font-weight: 500;
+  text-decoration: none;
+  transition: background var(--transition-base), transform 0.1s ease;
+  width: fit-content;
+}
+
+.primarySignupBtn:hover {
+  background: var(--color-peach-600);
+}
+
+.primarySignupBtn:active {
+  transform: scale(0.98);
+}
+
+.primarySignupBtn:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus-peach);
+}
+
+.welcomeActionCopy {
+  margin: 0;
+  color: var(--color-stone);
+  font-size: var(--text-body-sm);
+  line-height: 1.6;
+  max-width: 42ch;
+}
+
 .greeting {
   font-family: var(--font-display);
   font-size: 28px;
@@ -227,6 +271,32 @@
   box-shadow: var(--shadow-focus-peach);
 }
 
+.secondarySignupBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-sage-300);
+  background: var(--color-white);
+  color: var(--color-sage-700);
+  padding: 0 var(--space-5);
+  font-size: var(--text-body-sm);
+  font-weight: 500;
+  text-decoration: none;
+  transition: background var(--transition-base), border-color var(--transition-base);
+}
+
+.secondarySignupBtn:hover {
+  background: var(--color-sage-50);
+  border-color: var(--color-sage-500);
+}
+
+.secondarySignupBtn:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus-sage);
+}
+
 .feedSection {
   padding: var(--space-6);
   background: var(--color-white);
@@ -402,6 +472,11 @@
 
   .ctaBannerHeadline {
     font-size: 22px;
+  }
+
+  .primarySignupBtn,
+  .secondarySignupBtn {
+    width: 100%;
   }
 }
 

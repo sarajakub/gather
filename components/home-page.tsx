@@ -157,6 +157,14 @@ export default function HomePage() {
                 Discover nearby requests, step in where you can, and make local
                 care feel easy to act on.
               </p>
+              <div className="hero-actions">
+                <Link href="/signup" className="btn btn-primary btn-lg">
+                  Sign up
+                </Link>
+                <p className="soft-note">
+                  Create your neighbor profile to share what support you need or can offer.
+                </p>
+              </div>
             </section>
 
             <section className="surface-card section-card">

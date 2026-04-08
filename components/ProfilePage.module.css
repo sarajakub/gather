@@ -58,6 +58,14 @@
   font-family: var(--font-ui);
 }
 
+.avatarImage {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
 .profileTitle {
   display: flex;
   flex-direction: column;
@@ -255,6 +263,19 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-family: var(--font-ui);
+}
+
+.detailList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.detailRow {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: var(--text-body-sm);
+  line-height: 1.5;
 }
 
 .section {
