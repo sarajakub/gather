@@ -47,7 +47,7 @@
   No hardcoded hex values appear anywhere in component styles — all colors use CSS custom properties.
 */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Link from 'next/link';
 import PostCard from './PostCard';
 import BottomSheet from './BottomSheet';
@@ -59,12 +59,8 @@ const HomePage = () => {
   const [selectedPost, setSelectedPost] = useState(null);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const [showAllPosts, setShowAllPosts] = useState(false);
-  const [hasSignedUp, setHasSignedUp] = useState(false);
+  const [hasSignedUp] = useState(() => Boolean(loadLocalProfile()));
   const feedSectionRef = useRef(null);
-
-  useEffect(() => {
-    setHasSignedUp(Boolean(loadLocalProfile()));
-  }, []);
 
   const visiblePosts = showAllPosts ? posts : posts.slice(0, 3);
 

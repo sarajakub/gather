@@ -1,8 +1,7 @@
 'use client';
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import BottomNav from "@/components/BottomNav";
+import { useMemo, useState } from "react";
 import {
   BOROUGH_FILTERS,
   CATEGORY_FILTERS,
@@ -90,11 +89,7 @@ export default function HomePage() {
   const [urgencyFilter, setUrgencyFilter] = useState<UrgencyFilter>("All");
   const [sortOption, setSortOption] = useState<SortOption>("Recommended");
   const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_REQUESTS);
-  const [localRequests, setLocalRequests] = useState<HelpRequest[]>([]);
-
-  useEffect(() => {
-    setLocalRequests(loadLocalRequests());
-  }, []);
+  const [localRequests] = useState<HelpRequest[]>(() => loadLocalRequests());
 
   const allRequests = useMemo(
     () => [...localRequests, ...helpRequests],
@@ -366,8 +361,6 @@ export default function HomePage() {
           </aside>
         </section>
       </div>
-
-      <BottomNav activeTab="feed" hasNotification={true} />
     </main>
   );
 }
