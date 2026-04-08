@@ -1,14 +1,7 @@
 'use client';
 
 import Link from "next/link";
-import { useEffect, useMemo, useState, useTransition } from "react";
-import {
-  GoogleAuthProvider,
-  User,
-  onAuthStateChanged,
-  signInWithPopup,
-  signOut,
-} from "firebase/auth";
+import { useMemo, useState } from "react";
 import BottomNav from "@/components/BottomNav";
 import {
   BOROUGH_FILTERS,
@@ -20,14 +13,21 @@ import {
   type HelpRequest,
   type UrgencyFilter,
 } from "@/data/helpRequests";
-import { auth, isFirebaseConfigured } from "@/lib/firebase";
 
 const INITIAL_VISIBLE_REQUESTS = 15;
+const SORT_OPTIONS = ["Recommended", "Distance"] as const;
+
+type SortOption = (typeof SORT_OPTIONS)[number];
 
 function getUrgencyRank(urgency: HelpRequest["urgency"]) {
   if (urgency === "Urgent") return 0;
   if (urgency === "New") return 1;
   return 2;
+}
+
+function getDistanceValue(distance: string) {
+  const match = distance.match(/[\d.]+/);
+  return match ? Number(match[0]) : Number.POSITIVE_INFINITY;
 }
 
 function getUrgencyBadgeClass(urgency: HelpRequest["urgency"]) {
@@ -46,33 +46,33 @@ function getInitials(name: string | null | undefined) {
     .join("");
 }
 
-function getDisplayName(user: User | null) {
-  if (!user?.displayName?.trim()) return "Gather member";
-  return user.displayName.trim();
+function getPersonSlug(name: string) {
+  return name
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
+function getOfferHref(request: HelpRequest) {
+  const params = new URLSearchParams({
+    to: getPersonSlug(request.authorName),
+    name: request.authorName,
+    neighborhood: request.neighborhood,
+    postId: request.id,
+    postTitle: request.title,
+    mode: "offer",
+  });
+
+  return `/messages?${params.toString()}`;
 }
 
 export default function HomePage() {
-  const [user, setUser] = useState<User | null>(null);
-  const [authError, setAuthError] = useState<string | null>(null);
-  const [authPending, startTransition] = useTransition();
   const [boroughFilter, setBoroughFilter] = useState<BoroughFilter>("All");
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("All");
   const [urgencyFilter, setUrgencyFilter] = useState<UrgencyFilter>("All");
+  const [sortOption, setSortOption] = useState<SortOption>("Recommended");
   const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_REQUESTS);
-
-  useEffect(() => {
-    if (!auth) return;
-    const firebaseAuth = auth;
-
-    const unsubscribe = onAuthStateChanged(firebaseAuth, (nextUser) => {
-      setUser(nextUser);
-    });
-
-    return unsubscribe;
-  }, []);
-
-  const helperName = user?.displayName?.split(" ")[0] ?? "neighbor";
-  const displayName = getDisplayName(user);
 
   const neighborhoodCount = useMemo(
     () => new Set(helpRequests.map((request) => request.neighborhood)).size,
@@ -96,8 +96,26 @@ export default function HomePage() {
 
         return true;
       })
-      .sort((left, right) => getUrgencyRank(left.urgency) - getUrgencyRank(right.urgency));
-  }, [boroughFilter, categoryFilter, urgencyFilter]);
+      .sort((left, right) => {
+        if (sortOption === "Distance") {
+          const distanceDifference =
+            getDistanceValue(left.distance) - getDistanceValue(right.distance);
+
+          if (distanceDifference !== 0) {
+            return distanceDifference;
+          }
+        }
+
+        const urgencyDifference =
+          getUrgencyRank(left.urgency) - getUrgencyRank(right.urgency);
+
+        if (urgencyDifference !== 0) {
+          return urgencyDifference;
+        }
+
+        return getDistanceValue(left.distance) - getDistanceValue(right.distance);
+      });
+  }, [boroughFilter, categoryFilter, urgencyFilter, sortOption]);
 
   const visibleRequests = filteredRequests.slice(0, visibleCount);
   const canShowMore = visibleCount < filteredRequests.length;
@@ -117,45 +135,9 @@ export default function HomePage() {
     setVisibleCount(INITIAL_VISIBLE_REQUESTS);
   };
 
-  const handleGoogleAuth = () => {
-    if (!auth) {
-      setAuthError(
-        "Add your Firebase web config in environment variables to enable Google sign-in.",
-      );
-      return;
-    }
-    const firebaseAuth = auth;
-
-    setAuthError(null);
-    startTransition(async () => {
-      try {
-        const provider = new GoogleAuthProvider();
-        provider.setCustomParameters({ prompt: "select_account" });
-        await signInWithPopup(firebaseAuth, provider);
-      } catch (error) {
-        const message =
-          error instanceof Error
-            ? error.message
-            : "Google sign-in could not be completed.";
-        setAuthError(message);
-      }
-    });
-  };
-
-  const handleSignOut = () => {
-    if (!auth) return;
-    const firebaseAuth = auth;
-
-    setAuthError(null);
-    startTransition(async () => {
-      try {
-        await signOut(firebaseAuth);
-      } catch (error) {
-        const message =
-          error instanceof Error ? error.message : "Sign out failed.";
-        setAuthError(message);
-      }
-    });
+  const handleSortOptionChange = (nextSortOption: SortOption) => {
+    setSortOption(nextSortOption);
+    setVisibleCount(INITIAL_VISIBLE_REQUESTS);
   };
 
   return (
@@ -169,7 +151,7 @@ export default function HomePage() {
             <section className="surface-card app-hero-card">
               <p className="eyebrow">Neighbors helping neighbors</p>
               <h2 className="hero-title">
-                The space to gather around the help your community needs.
+                Gather around the help your community needs.
               </h2>
               <p className="hero-body">
                 Discover nearby requests, step in where you can, and make local
@@ -245,6 +227,24 @@ export default function HomePage() {
                     ))}
                   </div>
                 </div>
+
+                <div className="filter-group">
+                  <span className="filter-label">Sort</span>
+                  <div className="filter-chip-row">
+                    {SORT_OPTIONS.map((option) => (
+                      <button
+                        key={option}
+                        type="button"
+                        className={`filter-chip${
+                          sortOption === option ? " filter-chip-active" : ""
+                        }`}
+                        onClick={() => handleSortOptionChange(option)}
+                      >
+                        {option === "Distance" ? "Distance away" : option}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
 
               <div className="results-summary">
@@ -252,7 +252,9 @@ export default function HomePage() {
                   Showing {visibleRequests.length} of {filteredRequests.length} matching
                   requests
                 </span>
-                
+                <span>
+                  Sorted by {sortOption === "Distance" ? "distance away" : "recommended"}
+                </span>
               </div>
 
               {filteredRequests.length === 0 ? (
@@ -293,7 +295,10 @@ export default function HomePage() {
 
                       <div className="card-post-footer">
                         <span className="soft-note">{request.helperNote}</span>
-                        <Link href="/messages" className="btn btn-peach-soft btn-sm">
+                        <Link
+                          href={getOfferHref(request)}
+                          className="btn btn-peach-soft btn-sm"
+                        >
                           Offer to help
                         </Link>
                       </div>

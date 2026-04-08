@@ -1,22 +1,135 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { currentUser, people, messages } from '@/data/mockCommunity';
+import { useRouter } from 'next/navigation';
+import { people, messages } from '@/data/mockCommunity';
 import styles from './MessagesPage.module.css';
 
+const FALLBACK_AVATAR_BACKGROUNDS = [
+  'var(--color-peach-100)',
+  'var(--color-sage-100)',
+  'var(--color-stone-light)',
+  'var(--color-amber-100)',
+];
+const TIME_OPTIONS = [
+  '7:00 AM',
+  '7:30 AM',
+  '8:00 AM',
+  '8:30 AM',
+  '9:00 AM',
+  '9:30 AM',
+  '10:00 AM',
+  '10:30 AM',
+  '11:00 AM',
+  '11:30 AM',
+  '12:00 PM',
+  '12:30 PM',
+  '1:00 PM',
+  '1:30 PM',
+  '2:00 PM',
+  '2:30 PM',
+  '3:00 PM',
+  '3:30 PM',
+  '4:00 PM',
+  '4:30 PM',
+  '5:00 PM',
+  '5:30 PM',
+  '6:00 PM',
+  '6:30 PM',
+  '7:00 PM',
+  '7:30 PM',
+  '8:00 PM',
+  '8:30 PM',
+  '9:00 PM',
+];
+
+function getInitials(name) {
+  if (!name) {
+    return '?';
+  }
+
+  return name
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() || '')
+    .join('');
+}
+
+function getAvatarBackground(slug) {
+  const seed = Array.from(slug || '').reduce((total, character) => total + character.charCodeAt(0), 0);
+  return FALLBACK_AVATAR_BACKGROUNDS[seed % FALLBACK_AVATAR_BACKGROUNDS.length];
+}
+
+function buildFallbackPerson({ slug, name, neighborhood }) {
+  return {
+    slug,
+    name: name || 'Neighbor',
+    neighborhood: neighborhood || 'NYC',
+    initials: getInitials(name || 'Neighbor'),
+    avatarBg: getAvatarBackground(slug),
+    rating: null,
+    helped: null,
+    bio: '',
+  };
+}
+
+function getPersonRecord({ slug, message, toSlug, personName, personNeighborhood }) {
+  if (people[slug]) {
+    return people[slug];
+  }
+
+  const fallbackName =
+    message?.personName ||
+    (slug === toSlug ? personName : '') ||
+    'Neighbor';
+  const fallbackNeighborhood =
+    message?.personNeighborhood ||
+    (slug === toSlug ? personNeighborhood : '') ||
+    'NYC';
+
+  return buildFallbackPerson({
+    slug,
+    name: fallbackName,
+    neighborhood: fallbackNeighborhood,
+  });
+}
+
+function getTodayDateValue() {
+  const now = new Date();
+  const localNow = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+  return localNow.toISOString().slice(0, 10);
+}
+
+function getFirstName(name) {
+  return name.split(' ').filter(Boolean)[0] || 'there';
+}
+
+function getDefaultOfferMessage(name, postTitle) {
+  const firstName = getFirstName(name);
+  return `Hi ${firstName}! I would be happy to help you with your request${postTitle ? ` for "${postTitle}"` : ''}. Let me know if this time works well for you.`;
+}
+
 export default function MessagesPage({ searchParams = {} }) {
+  const router = useRouter();
   const toParam = searchParams.to;
   const titleParam = searchParams.postTitle;
   const modeParam = searchParams.mode;
+  const nameParam = searchParams.name;
+  const neighborhoodParam = searchParams.neighborhood;
   const dateParam = searchParams.date;
   const timeParam = searchParams.time;
   const noteParam = searchParams.note;
   const activityParam = searchParams.activity;
+  const postIdParam = searchParams.postId;
 
   const toSlug = Array.isArray(toParam) ? toParam[0] : toParam || 'marcus';
+  const personName = Array.isArray(nameParam) ? nameParam[0] : nameParam || '';
+  const personNeighborhood = Array.isArray(neighborhoodParam) ? neighborhoodParam[0] : neighborhoodParam || '';
   const mode = Array.isArray(modeParam) ? modeParam[0] : modeParam || '';
-  const hasPostId = Boolean(searchParams.postId);
+  const postId = Array.isArray(postIdParam) ? postIdParam[0] : postIdParam || 0;
+  const hasPostId = Boolean(postId);
   const hasOfferContext = mode === 'reschedule' || mode === 'offer' || hasPostId;
   const isRescheduleContext = mode === 'reschedule';
   const presetDate = Array.isArray(dateParam) ? dateParam[0] : dateParam || '';
@@ -26,14 +139,40 @@ export default function MessagesPage({ searchParams = {} }) {
   const postTitle = Array.isArray(titleParam)
     ? titleParam[0]
     : titleParam || activityTitle || 'Community help request';
-  const person = people[toSlug] || people.marcus;
+  const requestedPerson = people[toSlug] || buildFallbackPerson({
+    slug: toSlug,
+    name: personName,
+    neighborhood: personNeighborhood,
+  });
+  const defaultOfferDate = presetDate || (hasOfferContext ? getTodayDateValue() : '');
+  const defaultOfferMessage = presetNote || (
+    hasOfferContext
+      ? getDefaultOfferMessage(requestedPerson.name, postTitle)
+      : ''
+  );
 
-  const [threadData, setThreadData] = useState(messages);
+  const [threadData, setThreadData] = useState(() => {
+    if (typeof window === 'undefined') {
+      return messages;
+    }
+
+    try {
+      const stored = window.localStorage.getItem('gather-messages');
+      if (!stored) {
+        return messages;
+      }
+
+      const parsed = JSON.parse(stored);
+      return Array.isArray(parsed) ? parsed : messages;
+    } catch {
+      return messages;
+    }
+  });
   const [query, setQuery] = useState('');
   const [selectedSlug, setSelectedSlug] = useState(toSlug);
-  const [date, setDate] = useState('');
-  const [time, setTime] = useState('');
-  const [draft, setDraft] = useState('');
+  const [date, setDate] = useState(defaultOfferDate);
+  const [time, setTime] = useState(presetTime);
+  const [draft, setDraft] = useState(defaultOfferMessage);
   const [typingSlug, setTypingSlug] = useState(null);
   const replyTimeoutRef = useRef(null);
 
@@ -72,40 +211,6 @@ export default function MessagesPage({ searchParams = {} }) {
   );
 
   useEffect(() => {
-    if (!hasOfferContext) {
-      return;
-    }
-
-    if (presetDate) {
-      setDate(presetDate);
-    }
-
-    if (presetTime) {
-      setTime(presetTime);
-    }
-
-    if (presetNote) {
-      setDraft(presetNote);
-    }
-  }, [hasOfferContext, presetDate, presetNote, presetTime]);
-
-  useEffect(() => {
-    try {
-      const stored = window.localStorage.getItem('gather-messages');
-      if (!stored) {
-        return;
-      }
-
-      const parsed = JSON.parse(stored);
-      if (Array.isArray(parsed)) {
-        setThreadData(parsed);
-      }
-    } catch {
-      setThreadData(messages);
-    }
-  }, []);
-
-  useEffect(() => {
     window.localStorage.setItem('gather-messages', JSON.stringify(threadData));
   }, [threadData]);
 
@@ -122,7 +227,13 @@ export default function MessagesPage({ searchParams = {} }) {
         return true;
       }
 
-      const sender = people[item.personSlug];
+      const sender = getPersonRecord({
+        slug: item.personSlug,
+        message: item,
+        toSlug,
+        personName,
+        personNeighborhood,
+      });
       const haystack = [
         sender?.name || '',
         item.postTitle,
@@ -134,47 +245,63 @@ export default function MessagesPage({ searchParams = {} }) {
 
       return haystack.includes(normalizedQuery);
     });
-  }, [query, sortedMessages]);
+  }, [personNeighborhood, personName, query, sortedMessages, toSlug]);
 
   const conversations = useMemo(() => {
     const map = new Map();
 
     filteredMessages.forEach((item) => {
-      map.set(item.personSlug, item);
+      if (!map.has(item.personSlug)) {
+        map.set(item.personSlug, item);
+      }
     });
 
-    return Array.from(map.values()).reverse();
+    return Array.from(map.values());
   }, [filteredMessages]);
-
-  useEffect(() => {
-    if (hasOfferContext) {
-      setSelectedSlug(toSlug);
-      return;
-    }
-
-    const exists = conversations.some((conversation) => conversation.personSlug === selectedSlug);
-    if (!exists && conversations.length > 0) {
-      setSelectedSlug(conversations[0].personSlug);
-    }
-  }, [conversations, hasOfferContext, selectedSlug, toSlug]);
-
-  const activeSlug = hasOfferContext ? toSlug : selectedSlug || toSlug;
-  const activePerson = people[activeSlug] || person;
+  const conversationSlugs = useMemo(
+    () => new Set(conversations.map((conversation) => conversation.personSlug)),
+    [conversations]
+  );
+  const activeSlug = hasOfferContext
+    ? toSlug
+    : conversationSlugs.has(selectedSlug)
+      ? selectedSlug
+      : conversations[0]?.personSlug || toSlug;
+  const activeMessage = useMemo(
+    () => sortedMessages.find((item) => item.personSlug === activeSlug) || null,
+    [activeSlug, sortedMessages]
+  );
+  const activePerson = getPersonRecord({
+    slug: activeSlug,
+    message: activeMessage,
+    toSlug,
+    personName,
+    personNeighborhood,
+  }) || requestedPerson;
+  const hasKnownProfile = Boolean(people[activeSlug]);
 
   const threadMessages = useMemo(() => {
     const subset = filteredMessages.filter((item) => item.personSlug === activeSlug);
     return [...subset].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
   }, [activeSlug, filteredMessages]);
+  const showOfferComposer = hasOfferContext && threadMessages.length === 0;
 
-  useEffect(() => {
-    setThreadData((prev) =>
-      prev.map((item) =>
-        item.personSlug === activeSlug && item.direction === 'inbox'
-          ? { ...item, unread: false }
-          : item
-      )
-    );
-  }, [activeSlug]);
+  const markConversationAsRead = useCallback((slug) => {
+    setThreadData((prev) => {
+      let didChange = false;
+
+      const next = prev.map((item) => {
+        if (item.personSlug === slug && item.direction === 'inbox' && item.unread) {
+          didChange = true;
+          return { ...item, unread: false };
+        }
+
+        return item;
+      });
+
+      return didChange ? next : prev;
+    });
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -191,7 +318,7 @@ export default function MessagesPage({ searchParams = {} }) {
       return;
     }
 
-    const extraLine = hasOfferContext
+    const extraLine = showOfferComposer
       ? isRescheduleContext
         ? `Reschedule request for ${postTitle}: ${date} at ${time}.`
         : `I can help on ${date} at ${time}.`
@@ -203,17 +330,19 @@ export default function MessagesPage({ searchParams = {} }) {
 
     setThreadData((prev) => [
       ...prev,
-      {
-        id: `m-${Date.now()}`,
-        direction: 'sent',
-        unread: false,
-        createdAt: sentAtIso,
-        personSlug: activeSlug,
-        postId: hasOfferContext ? Number(searchParams.postId || 0) : 0,
-        postTitle,
-        body: composedBody,
-        timestamp,
-      },
+        {
+          id: `m-${Date.now()}`,
+          direction: 'sent',
+          unread: false,
+          createdAt: sentAtIso,
+          personSlug: activeSlug,
+          personName: activePerson.name,
+          personNeighborhood: activePerson.neighborhood,
+          postId: hasOfferContext ? postId : 0,
+          postTitle,
+          body: composedBody,
+          timestamp,
+        },
     ]);
 
     if (replyTimeoutRef.current) {
@@ -232,7 +361,9 @@ export default function MessagesPage({ searchParams = {} }) {
           unread: false,
           createdAt: new Date().toISOString(),
           personSlug: targetSlug,
-          postId: hasOfferContext ? Number(searchParams.postId || 0) : 0,
+          personName: activePerson.name,
+          personNeighborhood: activePerson.neighborhood,
+          postId: hasOfferContext ? postId : 0,
           postTitle: targetTitle,
           body: buildAutoReply(targetSlug),
           timestamp: formatTimestamp(),
@@ -242,10 +373,12 @@ export default function MessagesPage({ searchParams = {} }) {
     }, 1600);
 
     setDraft('');
-    if (hasOfferContext) {
-      setDate('');
+    if (showOfferComposer) {
+      setDate(getTodayDateValue());
       setTime('');
     }
+
+    router.replace('/messages');
   };
 
   return (
@@ -269,14 +402,23 @@ export default function MessagesPage({ searchParams = {} }) {
 
           <div className={styles.conversationList}>
             {conversations.map((item) => {
-              const sender = people[item.personSlug] || person;
+              const sender = getPersonRecord({
+                slug: item.personSlug,
+                message: item,
+                toSlug,
+                personName,
+                personNeighborhood,
+              });
               const isActive = sender.slug === activeSlug;
               return (
                 <button
                   key={item.id}
                   type="button"
                   className={`${styles.conversationItem} ${isActive ? styles.conversationItemActive : ''}`}
-                  onClick={() => setSelectedSlug(sender.slug)}
+                  onClick={() => {
+                    setSelectedSlug(sender.slug);
+                    markConversationAsRead(sender.slug);
+                  }}
                 >
                   <div className={styles.conversationAvatar} style={{ backgroundColor: sender.avatarBg }}>
                     {sender.initials}
@@ -301,15 +443,27 @@ export default function MessagesPage({ searchParams = {} }) {
 
         <section className={styles.threadCard}>
           <div className={styles.threadHeader}>
-            <Link href={`/people/${activePerson.slug}`} className={styles.threadPersonLink}>
-              <div className={styles.threadAvatar} style={{ backgroundColor: activePerson.avatarBg }}>
-                {activePerson.initials}
+            {hasKnownProfile ? (
+              <Link href={`/people/${activePerson.slug}`} className={styles.threadPersonLink}>
+                <div className={styles.threadAvatar} style={{ backgroundColor: activePerson.avatarBg }}>
+                  {activePerson.initials}
+                </div>
+                <div>
+                  <div className={styles.threadName}>{activePerson.name}</div>
+                  <div className={styles.threadSub}>Tap to view profile</div>
+                </div>
+              </Link>
+            ) : (
+              <div className={styles.threadPersonCard}>
+                <div className={styles.threadAvatar} style={{ backgroundColor: activePerson.avatarBg }}>
+                  {activePerson.initials}
+                </div>
+                <div>
+                  <div className={styles.threadName}>{activePerson.name}</div>
+                  <div className={styles.threadSub}>{activePerson.neighborhood}</div>
+                </div>
               </div>
-              <div>
-                <div className={styles.threadName}>{activePerson.name}</div>
-                <div className={styles.threadSub}>Tap to view profile</div>
-              </div>
-            </Link>
+            )}
           </div>
 
           <div className={styles.messagesList}>
@@ -340,7 +494,7 @@ export default function MessagesPage({ searchParams = {} }) {
             )}
           </div>
 
-          {hasOfferContext && (
+          {showOfferComposer && (
             <>
               <h2 className={styles.sectionTitle}>
                 {isRescheduleContext
@@ -363,13 +517,21 @@ export default function MessagesPage({ searchParams = {} }) {
                 <label className={styles.label} htmlFor="offer-time">
                   {isRescheduleContext ? 'Proposed new time' : 'Time you can help'}
                 </label>
-                <input
+                <select
                   id="offer-time"
                   className={styles.input}
-                  type="time"
                   value={time}
                   onChange={(event) => setTime(event.target.value)}
-                />
+                >
+                  <option value="">
+                    {isRescheduleContext ? 'Choose a new time' : 'Choose a time'}
+                  </option>
+                  {TIME_OPTIONS.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
 
                 <label className={styles.label} htmlFor="offer-note">
                   {isRescheduleContext ? 'Reason / note' : 'Message'}
@@ -394,17 +556,16 @@ export default function MessagesPage({ searchParams = {} }) {
             </>
           )}
 
-          {!hasOfferContext && (
+          {!showOfferComposer && (
             <form className={styles.form} onSubmit={handleSendMessage}>
               <label className={styles.label} htmlFor="reply-message">
                 Reply to {activePerson.name}
               </label>
-              <textarea
+              <input
                 id="reply-message"
-                className={styles.textarea}
+                className={styles.input}
                 value={draft}
                 onChange={(event) => setDraft(event.target.value)}
-                rows={4}
                 placeholder="Write your message"
               />
               <button type="submit" className={styles.sendBtn} disabled={!canSend}>

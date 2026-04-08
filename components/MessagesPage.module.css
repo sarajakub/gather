@@ -162,6 +162,12 @@
   color: inherit;
 }
 
+.threadPersonCard {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
 .threadAvatar {
   width: 46px;
   height: 46px;
