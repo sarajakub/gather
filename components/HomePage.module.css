@@ -1,0 +1,341 @@
+.page {
+  width: 100%;
+  margin: 0 auto;
+  background: var(--color-canvas);
+  padding: 0;
+  font-family: var(--font-ui);
+  color: var(--color-text-primary);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Welcome Header */
+.welcomeSection {
+  background: var(--color-sage-50);
+  padding: var(--space-6) var(--space-6);
+}
+
+.welcomeHeaderContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.greeting {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.2;
+  color: var(--color-forest);
+  margin: 0;
+}
+
+.subtitle {
+  font-size: var(--text-body-lg);
+  font-weight: 400;
+  line-height: 1.65;
+  color: var(--color-stone);
+  margin: 0;
+}
+
+/* Profile Snapshot */
+.profileSnapshotSection {
+  padding: var(--space-5) var(--space-6);
+  background: var(--color-white);
+}
+
+.profileCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--color-sage-100);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3);
+  gap: var(--space-3);
+}
+
+.profileCardLeft {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  flex: 1;
+  min-width: 0;
+}
+
+.profileAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-forest);
+  flex-shrink: 0;
+  font-family: var(--font-ui);
+}
+
+.profileCardInfo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  flex: 1;
+  min-width: 0;
+}
+
+.profileName {
+  font-size: var(--text-headline-sm);
+  font-weight: 500;
+  color: var(--color-forest);
+  line-height: 1.4;
+}
+
+.profileNeighborhood {
+  font-size: var(--text-body-sm);
+  color: var(--color-stone);
+}
+
+.profileSkills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: var(--space-1);
+}
+
+.skillBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  background: var(--color-white);
+  color: var(--color-sage-700);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-label);
+  font-weight: 500;
+  white-space: nowrap;
+  font-family: var(--font-ui);
+}
+
+.viewProfileBtn {
+  background: transparent;
+  color: var(--color-sage-600);
+  border: none;
+  font-size: var(--text-label);
+  font-weight: 500;
+  cursor: pointer;
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  transition: background var(--transition-base);
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-family: var(--font-ui);
+}
+
+.viewProfileBtn:hover {
+  background: rgba(61, 104, 40, 0.1);
+}
+
+.viewProfileBtn:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus-sage);
+  border-radius: var(--radius-md);
+}
+
+/* Primary CTA Banner */
+.ctaBannerSection {
+  padding: var(--space-5) var(--space-6);
+  background: var(--color-white);
+}
+
+.ctaBanner {
+  background: var(--color-peach-50);
+  border: 0.5px solid var(--color-sage-100);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  align-items: stretch;
+}
+
+.ctaBannerHeadline {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.2;
+  color: var(--color-forest);
+  margin: 0;
+}
+
+.ctaBannerSubtext {
+  font-size: var(--text-body);
+  color: var(--color-stone);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.ctaBannerButton {
+  background: var(--color-action);
+  color: var(--color-white);
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 0 var(--space-6);
+  height: 48px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--transition-base), transform 0.1s ease;
+  width: 100%;
+  font-family: var(--font-ui);
+}
+
+.ctaBannerButton:hover {
+  background: var(--color-peach-600);
+}
+
+.ctaBannerButton:active {
+  transform: scale(0.98);
+}
+
+.ctaBannerButton:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus-peach);
+}
+
+/* Feed Section */
+.feedSection {
+  padding: var(--space-5) var(--space-6);
+  background: var(--color-white);
+  border-top: 0.5px solid rgba(30, 48, 16, 0.07);
+}
+
+.sectionLabelWrapper {
+  margin-bottom: var(--space-4);
+}
+
+.sectionLabel {
+  font-size: var(--text-overline);
+  font-weight: 500;
+  color: var(--color-stone);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin: 0;
+  font-family: var(--font-ui);
+}
+
+.postsList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* Skills Section */
+.skillsSection {
+  padding: var(--space-5) var(--space-6);
+  background: var(--color-white);
+  border-top: 0.5px solid rgba(30, 48, 16, 0.07);
+}
+
+.skillsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: var(--space-4);
+  margin-top: var(--space-3);
+}
+
+.skillChip {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--color-sage-100);
+  color: var(--color-sage-700);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-label);
+  font-weight: 500;
+  font-family: var(--font-ui);
+}
+
+.editSkillsLink {
+  background: transparent;
+  color: var(--color-sage-600);
+  border: none;
+  font-size: var(--text-caption);
+  font-weight: 400;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  transition: color var(--transition-base);
+  font-family: var(--font-ui);
+}
+
+.editSkillsLink:hover {
+  color: var(--color-sage-700);
+}
+
+.editSkillsLink:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus-sage);
+  border-radius: var(--radius-sm);
+  padding: 2px 4px;
+}
+
+/* Bottom Nav Spacer */
+.bottomNavSpacer {
+  height: 64px;
+  flex-shrink: 0;
+  background: var(--color-white);
+}
+
+/* Accessibility: Reduce Motion */
+@media (prefers-reduced-motion: reduce) {
+  .ctaBannerButton {
+    transition: none;
+  }
+  .viewProfileBtn,
+  .editSkillsLink {
+    transition: none;
+  }
+}
+
+/* Mobile Layout */
+@media (max-width: 480px) {
+  .page {
+    max-width: 100%;
+  }
+
+  .greeting {
+    font-size: 26px;
+  }
+
+  .ctaBannerHeadline {
+    font-size: 22px;
+  }
+}
+
+/* Landscape orientation adjustments */
+@media (orientation: landscape) and (max-height: 600px) {
+  .welcomeSection {
+    padding: var(--space-4) var(--space-4);
+  }
+
+  .profileSnapshotSection {
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .ctaBannerSection {
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .feedSection {
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .skillsSection {
+    padding: var(--space-3) var(--space-4);
+  }
+}
